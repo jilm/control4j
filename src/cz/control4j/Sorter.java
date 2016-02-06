@@ -80,6 +80,12 @@ public class Sorter implements Iterable<Module> {
     return this;
   }
 
+  /**
+   *
+   * @param source
+   * @param destination
+   * @return
+   */
   public Sorter addEdge(Module source, Module destination) {
     graph.addEdge(source, destination);
     return this;
