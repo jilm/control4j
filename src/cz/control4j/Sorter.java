@@ -19,8 +19,10 @@
 package cz.control4j;
 
 import cz.lidinsky.tools.CommonException;
+import cz.lidinsky.tools.ExceptionCode;
 import static cz.lidinsky.tools.Validate.notNull;
 import java.util.Iterator;
+import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
@@ -51,7 +53,8 @@ public class Sorter implements Iterable<Module> {
    *
    *  @param module
    *             a module to add into the internal graph
-   * @return
+   *
+   *  @return
    *
    *  @throws CommonException
    *             if the parameter contains <code>null</code> value
@@ -104,6 +107,7 @@ public class Sorter implements Iterable<Module> {
    */
   @Override
   public Iterator<Module> iterator() {
+    detectFeedback();
     // create iterator
     return new TopologicalOrderIterator<>(graph);
   }
@@ -118,4 +122,14 @@ public class Sorter implements Iterable<Module> {
 
   private final DefaultDirectedGraph<Module, DefaultEdge> graph;
 
+  protected void detectFeedback() {
+    CycleDetector<Module, DefaultEdge> cycleDetector
+        = new CycleDetector<>(graph);
+    if (cycleDetector.detectCycles()) {
+      throw new CommonException()
+          .setCode(ExceptionCode.CYCLIC_DEFINITION)
+          .set("message", "There is a feedback!");
+    }
+
+  }
 }

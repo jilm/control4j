@@ -16,11 +16,11 @@
  */
 package cz.control4j;
 
+import cz.lidinsky.tools.CommonException;
 import java.util.Iterator;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -45,8 +45,10 @@ public class SorterTest {
   public static void tearDownClass() {
   }
 
+
   @Before
   public void setUp() {
+
   }
 
   @After
@@ -98,16 +100,19 @@ public class SorterTest {
   /**
    * Test of iterator method, of class Sorter.
    */
-  @Test
-  @Ignore
-  public void testIterator() {
+  @Test(expected=CommonException.class)
+   public void testIterator() {
     System.out.println("iterator");
-    Sorter instance = new Sorter();
-    Iterator<Module> expResult = null;
-    Iterator<Module> result = instance.iterator();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    System.out.println("cycle detection");
+
+    Sorter sorter = new Sorter();
+    Module module1 = new TestModule();
+    Module module2 = new TestModule();
+    sorter.addVertex(module1);
+    sorter.addVertex(module2);
+    sorter.addEdge(module1, module2);
+    sorter.addEdge(module2, module1);
+    Iterator<Module> iterator = sorter.iterator();
   }
 
 }
