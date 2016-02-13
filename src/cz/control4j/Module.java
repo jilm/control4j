@@ -70,7 +70,7 @@ package cz.control4j;
  *  </ol>
  *
  */
-abstract class Module {
+public abstract class Module {
 
   //------------------------------------------------ Build-time initialization.
 
@@ -79,8 +79,7 @@ abstract class Module {
    * created. If exception is thrown, the application stop excecution and
    * control loop will not start.
    */
-  void initialize() {
-  }
+  void initialize() { }
 
   //----------------------------------------------------------------- Run-time.
 
@@ -94,4 +93,11 @@ abstract class Module {
    */
   public void prepare() { }
 
+  public int getInputIndex(String key) {
+    throw new UnsupportedOperationException();
+  }
+
+  public int getOutputIndex(String key) {
+    throw new UnsupportedOperationException();
+  }
 }

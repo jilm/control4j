@@ -15,6 +15,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with control4j.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package cz.control4j;
 
 import java.lang.annotation.Documented;
@@ -25,7 +26,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Mark one input of the module class.
+ * Mark one input of the module class. It may be used to denote just single
+ * input, just like that:<br>
+ *
+ * {@literal @Input(index=0 alias="en" description="Enable input")}<br>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -33,9 +37,22 @@ import java.lang.annotation.Target;
 @Repeatable(ModuleInputs.class)
 public @interface Input
 {
+  /**
+   * It is the index into the input array of the processing method.
+   * @return
+   */
+  int index() default -1;
 
-    int index();
-    String alias() default "";
-    String description() default "";
+  /**
+   * Identifier of the input.
+   * @return
+   */
+  String alias() default "";
+
+  /**
+   * Short description if the input.
+   * @return
+   */
+  String description() default "";
 
 }

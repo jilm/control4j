@@ -50,4 +50,9 @@ public abstract class InputModule extends Module
   protected abstract void put(Signal[] input, int inputLength)
     throws RuntimeException;
 
+
+  public int getInputIndex(String key) {
+    return ModuleUtils.getInputIndex(this.getClass(), key);
+  }
+
 }
