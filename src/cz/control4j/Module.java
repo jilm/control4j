@@ -81,6 +81,29 @@ public abstract class Module {
    */
   void initialize() { }
 
+  /**
+   * Used to set properties of the module. The default implementation uses
+   * annotations to decide which concrete module method to call in order to
+   * pass the property further. If some more complex behaviour is needed, this
+   * method may be overriden.
+   *
+   * @param key
+   *            the property identifier
+   *
+   * @param value
+   *            the value of the property
+   *
+   * @throws CommonException
+   *            if the given key is not supported
+   *
+   * @throws CommonException
+   *            if the given value is not applicable for the property with
+   *            given key
+   */
+  void set(String key, String value) {
+    ModuleUtils.setProperty(this, key, value);
+  }
+
   //----------------------------------------------------------------- Run-time.
 
   /**
@@ -93,11 +116,4 @@ public abstract class Module {
    */
   public void prepare() { }
 
-  public int getInputIndex(String key) {
-    throw new UnsupportedOperationException();
-  }
-
-  public int getOutputIndex(String key) {
-    throw new UnsupportedOperationException();
-  }
 }

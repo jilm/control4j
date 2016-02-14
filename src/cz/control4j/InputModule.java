@@ -50,7 +50,24 @@ public abstract class InputModule extends Module
   protected abstract void put(Signal[] input, int inputLength)
     throws RuntimeException;
 
-
+  /**
+   * Return index for input with given key. Default implementation uses
+   * input and output annotations to find out. This method may be overriden
+   * to achieve more complex behaviour.
+   *
+   * @param key
+   *            requested key
+   *
+   * @return an index of the input with given index
+   *
+   * @throws CommonException
+   *            if the given key is not supported by the module
+   *
+   * @throws CommonException
+   *            if the module doesn't support inputs at all
+   *
+   * @see ModuleUtils#getInputIndex(java.lang.Class, java.lang.String) 
+   */
   public int getInputIndex(String key) {
     return ModuleUtils.getInputIndex(this.getClass(), key);
   }

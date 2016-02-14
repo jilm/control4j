@@ -74,6 +74,12 @@ public class Preprocessor {
       .collect(Collectors.toSet());
   }
 
+  /**
+   * TODO:
+   *
+   * @param inputs
+   * @return
+   */
   int[] getInputMap(Collection<IO> inputs) {
     int size = inputs.size();
     int[] indices = new int[size];
@@ -82,7 +88,7 @@ public class Preprocessor {
     int maxIndex = 0;
     for (IO input : inputs) {
       String key = input.getKey();
-      indices[i] = input.getModule().getInputIndex(key);
+      //indices[i] = input.getModule().getInputIndex(key);
       maxIndex = Math.max(maxIndex, indices[i]);
       pointers[i] = input.getPointer();
       i++;
@@ -124,11 +130,16 @@ public class Preprocessor {
   private final Deque<ReferenceDecorator<IO>> inputs;
 
   /**
-   * Puts a module intput into the internall buffer for further processing.
+   * Puts a module intput into the internal buffer for further processing.
    *
    * @param name
+   *            signal name
+   *
    * @param scope
+   *            scope where the signal should be looked for
+   *
    * @param input
+   *            an input to add
    */
   public void putModuleIntput(String name, Scope scope, IO input) {
     inputs.add(new ReferenceDecorator<>(name, scope, input));
