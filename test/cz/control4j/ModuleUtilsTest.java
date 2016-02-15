@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -152,5 +153,33 @@ public class ModuleUtilsTest {
     }
   }
 
+  public static class TestModuleInstance extends Module { }
 
+  /**
+   * Test of createModuleInstance method, of class ModuleUtils.
+   */
+  @Test
+  public void testCreateModuleInstance() {
+    System.out.println("createModuleInstance");
+    System.out.println(TestModuleInstance.class.getName());
+    String className = "cz.control4j.ModuleUtilsTest$TestModuleInstance";
+    Module result = ModuleUtils.createModuleInstance(className);
+    assertTrue(result instanceof TestModuleInstance);
+  }
+
+  @Test(expected=CommonException.class)
+  public void testCreateModuleInstance1() {
+    System.out.println("createModuleInstance");
+    System.out.println(TestModuleInstance.class.getName());
+    String className = "java.lang.Object";
+    ModuleUtils.createModuleInstance(className);
+  }
+
+  @Test(expected=CommonException.class)
+  public void testCreateModuleInstance2() {
+    System.out.println("createModuleInstance");
+    System.out.println(TestModuleInstance.class.getName());
+    String className = null;
+    ModuleUtils.createModuleInstance(className);
+  }
 }

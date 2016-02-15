@@ -94,5 +94,34 @@ public class ModuleUtils {
     return getSingleton(filtered);
   }
 
+  /**
+   * Creates and returns instance of the module with given class name.
+   *
+   * @param className
+   *            class name of the required module implementation
+   *
+   * @return created instance of the object with given class name
+   */
+  public static Module createModuleInstance(String className) {
+    try {
+      Class<Module> moduleClass = (Class<Module>) Class.forName(className);
+      Module module = moduleClass.newInstance();
+      return module;
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+      throw new CommonException()
+          .setCause(e)
+          .set("message", "Couldn't create instance of the module with given class name!")
+          .set("class name", className);
+    } catch (ClassCastException e) {
+      throw new CommonException()
+          .setCause(e)
+          .set("message", "The class with given name is not descendant of the Module class!")
+          .set("class name", className);
+    } catch (NullPointerException e) {
+      throw new CommonException()
+          .setCause(e)
+          .set("message", "Could not create module instance because of null class name!");
+    }
+  }
 
 }
