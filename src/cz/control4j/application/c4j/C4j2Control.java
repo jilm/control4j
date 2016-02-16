@@ -193,6 +193,12 @@ public class C4j2Control {
     }
   }
 
+  /**
+   *
+   * @param scopeCode
+   * @param localScope
+   * @return
+   */
   protected Scope resolveScope(int scopeCode, Scope localScope) {
     switch (scopeCode) {
       case 0:
