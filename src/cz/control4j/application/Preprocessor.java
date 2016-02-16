@@ -43,9 +43,37 @@ public class Preprocessor {
 
   }
 
+  //------------------------------------------------------------ Scope pointer.
+
+  /** Holds actual scope during the process of translation. */
+  private Scope scopePointer = Scope.getGlobal();
+
+  /**
+   * Returns actual local scope.
+   *
+   * @return actual local scope
+   */
+  public Scope getScopePointer() {
+    return scopePointer;
+  }
+
+  /**
+   * Starts new local scope, actual scope becomes parent of the new scope.
+   */
+  public void startScope() {
+    scopePointer = new Scope(scopePointer);
+  }
+
+  /**
+   * Ends current local scope and returns to its parent scope.
+   */
+  public void endScope() {
+    scopePointer = scopePointer.getParent();
+  }
+
   //--------------------------------------------------------------- Properties.
 
-  
+
 
   //------------------------------------------------------------------ Modules.
 
@@ -146,7 +174,7 @@ public class Preprocessor {
    *            an input to add
    */
   public void putModuleIntput(String name, Scope scope, IO input) {
-    inputs.add(new ReferenceDecorator<>(name, scope, input));
+    inputs.add(new ReferenceDecorator<>(name, scope, input, input.getKey()));
   }
 
   /**
@@ -162,6 +190,10 @@ public class Preprocessor {
       // insert input into it
       connection.addConsumer(reference.getDecorated());
     }
+  }
+
+  public void addPropertyReference(ReferenceDecorator<Configurable> reference) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
 

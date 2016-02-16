@@ -39,11 +39,12 @@ import static cz.lidinsky.tools.Validate.notNull;
  *             it is a datatype of the object which will contain resolved
  *             object
  */
-public class ReferenceDecorator<T> {
+public class ReferenceDecorator<T> extends DeclarationBase {
 
     private final String href;
     private final Scope scope;
     private final T decorated;
+    private final String key;
 
     /**
      *  Initialization
@@ -56,12 +57,13 @@ public class ReferenceDecorator<T> {
      *             if eiter of the arguments is null or blank
      */
     public ReferenceDecorator(
-        String href, Scope scope, T decorated) {
+        String href, Scope scope, T decorated, String key) {
 
         try {
             this.href = notBlank(href);
             this.scope = notNull(scope);
             this.decorated = notNull(decorated);
+            this.key = key;
         } catch (Exception e) {
             throw new CommonException()
                 .setCause(e)

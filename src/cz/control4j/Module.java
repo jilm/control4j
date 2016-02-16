@@ -100,7 +100,7 @@ public abstract class Module {
    *            if the given value is not applicable for the property with
    *            given key
    */
-  void set(String key, String value) {
+  public void set(String key, String value) {
     ModuleUtils.setProperty(this, key, value);
   }
 

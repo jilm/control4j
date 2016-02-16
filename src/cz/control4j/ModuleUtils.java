@@ -101,6 +101,9 @@ public class ModuleUtils {
    *            class name of the required module implementation
    *
    * @return created instance of the object with given class name
+   *
+   * @throws CommonException
+   *            if it is not possible to create module instance
    */
   public static Module createModuleInstance(String className) {
     try {
