@@ -37,55 +37,20 @@ public class C4j2ControlTest {
   public C4j2ControlTest() {
   }
 
-  @BeforeClass
-  public static void setUpClass() {
-  }
-
-  @AfterClass
-  public static void tearDownClass() {
-  }
-
   @Before
   public void setUp() {
+  }
+
+  @BeforeClass
+  public static void setUpClass() {
   }
 
   @After
   public void tearDown() {
   }
 
-  /**
-   * Test of translateModule method, of class C4j2Control.
-   */
-  @Test
-  public void testTranslateModule() {
-    System.out.println("translateModule");
-    Module moduleDef = null;
-    C4j2Control instance = null;
-    instance.translateModule(moduleDef);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
-  }
-
-  class ConfigurableSource extends Configurable {}
-  class ConfigurableDestination extends cz.control4j.application.Configurable {};
-
-  /**
-   * Test of translateConfiguration method, of class C4j2Control.
-   */
-  @Test
-  public void testTranslateConfiguration() {
-    System.out.println("translateConfiguration");
-    Configurable source = new ConfigurableSource();
-    Property prop1 = new Property().setKey("key1").setValue("val1");
-    prop1.setDeclarationReference("ref1");
-    source.put(prop1);
-    cz.control4j.application.Configurable destination
-        = new ConfigurableDestination();
-    Scope localScope = Scope.getGlobal();
-    C4j2Control instance = new C4j2Control(new Preprocessor());
-    instance.translateConfiguration(source, destination, localScope);
-    assertEquals("val1", destination.getValue("key1"));
-    assertEquals("ref1", destination.getDeclarationReferenceText());
+  @AfterClass
+  public static void tearDownClass() {
   }
 
   /**
@@ -160,5 +125,33 @@ public class C4j2ControlTest {
     // TODO review the generated test code and remove the default call to fail.
     fail("The test case is a prototype.");
   }
+
+  @Test
+  public void testTranslateConfiguration() {
+    System.out.println("translateConfiguration");
+    Configurable source = new ConfigurableSource();
+    Property prop1 = new Property().setKey("key1").setValue("val1");
+    prop1.setDeclarationReference("ref1");
+    source.put(prop1);
+    cz.control4j.application.Configurable destination
+        = new ConfigurableDestination();
+    Scope localScope = Scope.getGlobal();
+    C4j2Control instance = new C4j2Control(new Preprocessor());
+    instance.translateConfiguration(source, destination, localScope);
+    assertEquals("val1", destination.getValue("key1"));
+    assertEquals("ref1", destination.getDeclarationReferenceText());
+  }
+
+  @Test
+  public void testTranslateModule() {
+    System.out.println("translateModule");
+    Module moduleDef = null;
+    C4j2Control instance = null;
+    instance.translateModule(moduleDef);
+    // TODO review the generated test code and remove the default call to fail.
+    fail("The test case is a prototype.");
+  }
+  class ConfigurableSource extends Configurable {}
+  class ConfigurableDestination extends cz.control4j.application.Configurable {}
 
 }

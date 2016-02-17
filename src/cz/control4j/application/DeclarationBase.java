@@ -47,12 +47,12 @@ public abstract class DeclarationBase extends ObjectBase
    */
   public DeclarationBase()
   {
-    declarationReference = new DeclarationReference(this.getClass().getName());
+    declarationReference = DeclarationReference.get(this.getClass().getName());
   }
 
   protected DeclarationReference getThisObjectIdentification()
   {
-    return new DeclarationReference(this.getClass().getName());
+    return DeclarationReference.get(this.getClass().getName());
   }
 
   protected void setObjectIdentification(DeclarationReference identification)
@@ -68,7 +68,7 @@ public abstract class DeclarationBase extends ObjectBase
    */
   public void setDeclarationReference(DeclarationReference reference)
   {
-    declarationReference.setParent(reference);
+    declarationReference = reference;
   }
 
   /**
@@ -81,7 +81,7 @@ public abstract class DeclarationBase extends ObjectBase
   public final void setDeclarationReference(String reference)
   {
     if (reference != null)
-      setDeclarationReference(new DeclarationReference(reference));
+      setDeclarationReference(DeclarationReference.get(reference));
     else
       setDeclarationReference((DeclarationReference)null);
   }

@@ -26,8 +26,8 @@ import java.util.List;
 
 /**
  *
- *  Provides common interface for objects which contain
- *  configuration.
+ *  Provides common interface for objects which contain configuration. Each
+ *  single configuration item (property) consists of a pair key and value.
  *
  */
 abstract class Configurable

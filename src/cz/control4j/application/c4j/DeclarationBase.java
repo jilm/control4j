@@ -24,14 +24,17 @@ import cz.lidinsky.tools.text.DeclarationReference;
 
 /**
  *
- *  A common base for classes that hold data about the place where
- *  they were declared or from where they come from.
- *  This class provides common means for keeping such information.
- *  This is useful mainly for reporting potential problems.
+ *  A common base for classes that hold data about the place where they were
+ *  declared or from where they come from. This class provides common means
+ *  for keeping such information. This is useful mainly for reporting
+ *  potential errors and issues.
  *
- *  <p>In other words, the returned information should be in the
- *  human readable form and the user should be able to unambiquously
- *  identify the referenced object if neccessary.
+ *  <p>The information information should be in the human readable form and the
+ *  user should be able to unambiquously identify the referenced object if
+ *  neccessary.
+ *
+ *  <p>The DeclarationReference object is used as a builder and holder of such
+ *  reference information.
  *
  *  @see control4j.tools.DeclarationReference
  *
@@ -40,8 +43,8 @@ public abstract class DeclarationBase implements IToStringBuildable
 {
 
   /**
-   *  Contains information about a place where the object was
-   *  declared in the human readable form. May contain null value!
+   *  Contains information about a place where the object was declared in the
+   *  human readable form. May contain null value!
    */
   private DeclarationReference declarationReference;
 
@@ -54,10 +57,9 @@ public abstract class DeclarationBase implements IToStringBuildable
   }
 
   /**
-   *  Returnes just class name. This method should be overriden
-   *  to return more useful information. It should return some
-   *  default identification that will be returned in cases where
-   *  no other reference was inserted.
+   *  Returnes just class name. This method should be overriden to return more
+   *  useful information. It should return some default identification that
+   *  will be returned in cases where no other reference was inserted.
    *
    *  @return name of this class
    */
@@ -86,15 +88,15 @@ public abstract class DeclarationBase implements IToStringBuildable
   public final void setDeclarationReference(String reference)
   {
     if (reference != null)
-      setDeclarationReference(new DeclarationReference(reference));
+      setDeclarationReference(DeclarationReference.get(reference));
     else
       setDeclarationReference((DeclarationReference)null);
   }
 
   /**
-   *  Returns the assigned declaration reference. If the reference
-   *  has not been assigned yet, or if the null value was assigned,
-   *  it returnes default identification.
+   *  Returns the assigned declaration reference. If the reference has not been
+   *  assigned yet, or if the null value was assigned, it returnes default
+   *  identification.
    *
    *  @return declaration reference or default identification
    *
@@ -104,14 +106,14 @@ public abstract class DeclarationBase implements IToStringBuildable
   {
     if (declarationReference == null)
       declarationReference
-          = new DeclarationReference(getDefaultObjectIdentification());
+          = DeclarationReference.get(getDefaultObjectIdentification());
     return declarationReference;
   }
 
   /**
-   *  Returns the text of the declaration reference which was
-   *  assigned. If it has not been assigned yet, or a null value
-   *  has been assigned, it returns the default identification.
+   *  Returns the text of the declaration reference which was assigned. If it
+   *  has not been assigned yet, or a null value has been assigned, it returns
+   *  the default identification.
    *
    *  @return the text representation of the declaration reference
    *

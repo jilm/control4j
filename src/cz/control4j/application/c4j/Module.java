@@ -33,7 +33,7 @@ import java.util.List;
 public class Module extends DescriptionBase {
 
   private String className;
-  //private List<Resource> resources;
+  private List<Resource> resources;
   private List<Input> input;
   private List<Output> output;
   private List<String> inputTags;
@@ -43,7 +43,7 @@ public class Module extends DescriptionBase {
    *  An empty constructor.
    */
   public Module() {
-    //resources = new ArrayList<>();
+    resources = new ArrayList<>();
     input = new ArrayList<>();
     output = new ArrayList<>();
     inputTags = new ArrayList<>();
@@ -81,15 +81,15 @@ public class Module extends DescriptionBase {
   }
 
 
-//  void add(Resource resource) {
-//    if (resource != null) {
-//      resources.add(resource);
-//    }
-//  }
-//
-//  public Collection<Resource> getResources() {
-//    return unmodifiableCollection(resources);
-//  }
+  void add(Resource resource) {
+    if (resource != null) {
+      resources.add(resource);
+    }
+  }
+
+  public Collection<Resource> getResources() {
+    return unmodifiableCollection(resources);
+  }
 
 
   void add(Input input) {
