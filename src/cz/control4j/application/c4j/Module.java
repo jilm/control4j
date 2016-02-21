@@ -19,7 +19,6 @@
 package cz.control4j.application.c4j;
 
 import cz.lidinsky.tools.CommonException;
-import cz.lidinsky.tools.ToStringBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import static java.util.Collections.unmodifiableCollection;
@@ -133,16 +132,5 @@ public class Module extends DescriptionBase {
   public Collection<String> getOutputTags() {
     return unmodifiableCollection(outputTags);
   }
-
-  @Override
-    public void toString(ToStringBuilder builder) {
-      super.toString(builder);
-      builder.append("className", className)
-        //.append("resources", resources)
-        .append("input", input)
-        .append("output", output)
-        .append("inputTags", inputTags)
-        .append("outputTags", outputTags);
-    }
 
 }

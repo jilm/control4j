@@ -18,8 +18,6 @@
 
 package cz.control4j.application.c4j;
 
-import cz.lidinsky.tools.ToStringBuilder;
-
 /**
  *
  *  Resource definition.
@@ -76,14 +74,6 @@ public class ResourceDef extends DescriptionBase implements IDefinition {
 
   public void setScope(int scope) {
     this.scope = scope;
-  }
-
-  @Override
-  public void toString(ToStringBuilder builder) {
-    super.toString(builder);
-    builder.append("className", className)
-        .append("name", name)
-        .append("scope", scope);
   }
 
 }

@@ -18,9 +18,6 @@
 
 package cz.control4j.application.c4j;
 
-
-import cz.lidinsky.tools.ToStringBuilder;
-
 /**
  *
  *  Represents an output element
@@ -59,15 +56,6 @@ public class Output extends Configurable implements IReference {
 
   public void setScope(int scope) {
     this.scope = scope;
-  }
-
-  @Override
-  public void toString(ToStringBuilder builder)
-  {
-    super.toString(builder);
-    builder.append("index", index)
-        .append("href", href)
-        .append("scope", scope);
   }
 
 }

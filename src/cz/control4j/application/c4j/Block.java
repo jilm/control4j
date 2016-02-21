@@ -18,11 +18,9 @@
 
 package cz.control4j.application.c4j;
 
+import static cz.lidinsky.tools.text.StrUtils.isBlank;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import cz.lidinsky.tools.ToStringBuilder;
-import static cz.lidinsky.tools.text.StrUtils.isBlank;
 import static java.util.Collections.unmodifiableCollection;
 import java.util.List;
 
@@ -170,17 +168,5 @@ public class Block extends DescriptionBase implements IDefinition {
 //  public control4j.application.Block getExpandable() {
 //    return new ExpandableBlock();
 //  }
-
-  @Override
-  public void toString(ToStringBuilder builder) {
-    super.toString(builder);
-    builder.append("name", name)
-        .append("scope", scope)
-        .append("input", input)
-        .append("output", output)
-        .append("modules", modules)
-        .append("signals", signals)
-        .append("uses", uses);
-  }
 
 }

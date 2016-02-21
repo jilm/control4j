@@ -22,7 +22,6 @@ import cz.control4j.tools.Tools;
 import static cz.control4j.tools.Tools.catched;
 import cz.lidinsky.tools.CommonException;
 import cz.lidinsky.tools.ExceptionCode;
-import cz.lidinsky.tools.ToStringBuilder;
 import static cz.lidinsky.tools.Validate.notNegative;
 import static cz.lidinsky.tools.Validate.notNull;
 import java.util.HashSet;
@@ -376,9 +375,6 @@ class ControlLoop {
       if (module != null) {
         writer.println(module.toString());
       }
-      writer.println(
-          new ToStringBuilder()
-              .toString());
       Control.getLogger().log(Level.INFO, "The dump file was created: {0}",
           dumpFile.getAbsolutePath());
       dump = false;

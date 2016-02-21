@@ -18,8 +18,6 @@
 
 package cz.control4j.application.c4j;
 
-import cz.lidinsky.tools.IToStringBuildable;
-import cz.lidinsky.tools.ToStringBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +29,7 @@ import java.util.List;
  *
  */
 abstract class Configurable
-extends DeclarationBase implements IToStringBuildable {
+extends DeclarationBase {
 
   private List<Property> properties = new ArrayList<>();
 
@@ -48,11 +46,6 @@ extends DeclarationBase implements IToStringBuildable {
   public void put(Property property) {
     addProperty(property);
   }
-
-  @Override
-    public void toString(ToStringBuilder builder) {
-      builder.append("properties", properties);
-    }
 
   public void putConfiguration(Configurable source) {
     if (source.properties != null && source.properties.size() > 0) {

@@ -66,4 +66,21 @@ public class PrintAdapter extends AbstractAdapter
     System.out.println(use.toString());
   }
 
+  public static void main(String[] args) throws Exception {
+    try {
+    //String filename = args[0];
+    String filename = "C:\\Users\\jilm\\Documents\\projects\\new_heating\\heating.xml";
+    cz.lidinsky.tools.xml.XMLReader reader
+        = new cz.lidinsky.tools.xml.XMLReader();
+    XMLHandler handler = new XMLHandler();
+    handler.setDestination(new PrintAdapter());
+    reader.addHandler(handler);
+    reader.load(new java.io.File(filename));
+    } catch (Exception e) {
+      System.out.println("*****");
+      System.out.println(e.toString());
+      throw e;
+    }
+  }
+
 }

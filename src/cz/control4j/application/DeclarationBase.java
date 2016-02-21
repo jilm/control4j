@@ -18,7 +18,6 @@
 
 package cz.control4j.application;
 
-import cz.lidinsky.tools.ToStringBuilder;
 import cz.lidinsky.tools.text.DeclarationReference;
 
 /**
@@ -107,11 +106,5 @@ public abstract class DeclarationBase extends ObjectBase
     return declarationReference.toString();
   }
 
-  @Override
-  public void toString(ToStringBuilder builder)
-  {
-    super.toString(builder);
-    builder.append("declarationReference", declarationReference);
-  }
 
 }

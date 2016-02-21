@@ -18,8 +18,6 @@
 
 package cz.control4j.application.c4j;
 
-import cz.lidinsky.tools.ToStringBuilder;
-
 /**
  *
  *  Represents define element
@@ -59,14 +57,6 @@ public class Define extends DeclarationBase implements IDefinition {
   Define setValue(final String value) {
     this.value = value;
     return this;
-  }
-
-  @Override
-  public void toString(ToStringBuilder builder) {
-    super.toString(builder);
-    builder.append("name", name)
-        .append("scope", scope)
-        .append("value", value);
   }
 
 }

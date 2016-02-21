@@ -18,8 +18,6 @@
 
 package cz.control4j.application.c4j;
 
-import cz.lidinsky.tools.ToStringBuilder;
-
 /**
  *
  *  Represents a property of some higher level object.
@@ -124,16 +122,6 @@ public class Property extends DeclarationBase implements IReference {
 
     public boolean isReference() {
         return isReference;
-    }
-
-    @Override
-    public void toString(ToStringBuilder builder) {
-        super.toString(builder);
-        builder.append("key", key)
-                .append("value", value)
-                .append("href", href)
-                .append("scope", scope)
-                .append("isReference", isReference);
     }
 
 }

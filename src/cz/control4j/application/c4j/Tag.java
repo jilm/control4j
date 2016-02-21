@@ -18,8 +18,6 @@
 
 package cz.control4j.application.c4j;
 
-import cz.lidinsky.tools.ToStringBuilder;
-
 /**
  *
  *  Represents a tag of the signal.
@@ -41,12 +39,6 @@ public class Tag extends Configurable {
   Tag setName(String name) {
     this.name = name;
     return this;
-  }
-
-  @Override
-  public void toString(ToStringBuilder builder) {
-    super.toString(builder);
-    builder.append("name", name);
   }
 
 }

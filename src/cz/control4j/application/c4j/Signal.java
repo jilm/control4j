@@ -20,7 +20,6 @@ package cz.control4j.application.c4j;
 
 import cz.lidinsky.tools.CommonException;
 import cz.lidinsky.tools.ExceptionCode;
-import cz.lidinsky.tools.ToStringBuilder;
 import static cz.lidinsky.tools.Validate.notNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,21 +123,6 @@ public class Signal extends DescriptionBase implements IDefinition {
 
   public List<Tag> getTags() {
     return tags;
-  }
-
-  @Override
-  public void toString(ToStringBuilder builder) {
-    super.toString(builder);
-    builder.append("name", name)
-        .append("scope", scope)
-        .append("isValueT_1Specified", isValueT_1Specified);
-    if (isValueT_1Specified) {
-      builder.append("isValueT_1Valid", isValueT_1Valid);
-      if (isValueT_1Valid) {
-        builder.append("valueT_1", valueT_1);
-      }
-    }
-    builder.append(tags);
   }
 
 }

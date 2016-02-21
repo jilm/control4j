@@ -18,8 +18,6 @@
 
 package cz.control4j.application.c4j;
 
-import cz.lidinsky.tools.IToStringBuildable;
-import cz.lidinsky.tools.ToStringBuilder;
 import cz.lidinsky.tools.text.DeclarationReference;
 
 /**
@@ -39,7 +37,7 @@ import cz.lidinsky.tools.text.DeclarationReference;
  *  @see control4j.tools.DeclarationReference
  *
  */
-public abstract class DeclarationBase implements IToStringBuildable
+public abstract class DeclarationBase
 {
 
   /**
@@ -125,19 +123,6 @@ public abstract class DeclarationBase implements IToStringBuildable
       return getDefaultObjectIdentification();
     else
       return declarationReference.toString();
-  }
-
-  @Override
-  public String toString()
-  {
-    return new ToStringBuilder()
-        .append(this)
-        .toString();
-  }
-
-  public void toString(ToStringBuilder builder)
-  {
-    builder.append("declarationReference", declarationReference);
   }
 
 }

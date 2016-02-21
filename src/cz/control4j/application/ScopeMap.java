@@ -20,8 +20,6 @@ package cz.control4j.application;
 
 import cz.lidinsky.tools.CommonException;
 import cz.lidinsky.tools.ExceptionCode;
-import cz.lidinsky.tools.IToStringBuildable;
-import cz.lidinsky.tools.ToStringBuilder;
 import java.util.Collection;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableCollection;
@@ -35,7 +33,7 @@ import java.util.NoSuchElementException;
  *
  * @param <E>
  */
-public class ScopeMap<E extends Object> implements IToStringBuildable {
+public class ScopeMap<E extends Object> {
 
   /**
    *  Creates an empty storage.
@@ -124,21 +122,6 @@ public class ScopeMap<E extends Object> implements IToStringBuildable {
     return buffer.isEmpty();
   }
 
-  @Override
-  public String toString() {
-    return new ToStringBuilder()
-        .append(this)
-        .toString();
-  }
-
-  /**
-   *
-   * @param builder
-   */
-  @Override
-  public void toString(ToStringBuilder builder) {
-    builder.append("buffer", buffer);
-  }
 
   /**
    *

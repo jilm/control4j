@@ -18,13 +18,11 @@
 
 package cz.control4j.application;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import cz.lidinsky.tools.CommonException;
 import cz.lidinsky.tools.ExceptionCode;
-import cz.lidinsky.tools.ToStringBuilder;
 import static cz.lidinsky.tools.Validate.notNull;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -52,10 +50,10 @@ public abstract class Configurable extends DeclarationBase {
 
   /**
    *  Returns true if and only if the key is already defined.
-   * 
+   *
    *  @param key
    *             requested key
-   * 
+   *
    *  @return true if the internal storage contains configuration under the
    *             the given key
    */
@@ -70,14 +68,14 @@ public abstract class Configurable extends DeclarationBase {
   /**
    *  Puts given property into the internal buffer. If there already is the
    *  value, it is replaced by the new value.
-   * 
+   *
    *  @param key
    *             property identification
-   * 
+   *
    *  @param value
    *             property value
-   * 
-   *  @return property object which was stored in the internal buffer 
+   *
+   *  @return property object which was stored in the internal buffer
    */
   public Property putProperty(String key, String value) {
     return putProperty(key, new Property(value));
@@ -126,7 +124,7 @@ public abstract class Configurable extends DeclarationBase {
 
   /**
    *  Returns resolved configuration.
-   * @return 
+   * @return
    */
   //public IConfigBuffer getConfiguration() {
     //ConfigBuffer buffer = new ConfigBuffer();

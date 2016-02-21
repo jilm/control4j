@@ -18,7 +18,6 @@
 
 package cz.control4j.application.c4j;
 
-import cz.lidinsky.tools.ToStringBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import static java.util.Collections.unmodifiableCollection;
@@ -82,15 +81,6 @@ public class Use extends Configurable implements IReference {
 
   public Collection<Output> getOutput() {
     return unmodifiableCollection(output);
-  }
-
-  @Override
-  public void toString(ToStringBuilder builder) {
-    super.toString(builder);
-    builder.append("href", href)
-        .append("scope", scope)
-        .append("input", input)
-        .append("output", output);
   }
 
 }

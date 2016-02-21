@@ -18,8 +18,6 @@
 
 package cz.control4j.application.c4j;
 
-import cz.lidinsky.tools.ToStringBuilder;
-
 /**
  *
  *  Represents a resource element inside the module.  This object has two
@@ -111,15 +109,5 @@ public class Resource extends Configurable implements IReference {
     //check();
     return isReference;
   }
-
-  @Override
-    public void toString(ToStringBuilder builder) {
-      super.toString(builder);
-      builder.append("key", key)
-        .append("className", className)
-        .append("href", href)
-        .append("scope", scope)
-        .append("isReference", isReference);
-    }
 
 }

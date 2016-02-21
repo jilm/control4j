@@ -18,28 +18,12 @@
 
 package cz.control4j.application;
 
-import cz.lidinsky.tools.IToStringBuildable;
-import cz.lidinsky.tools.ToStringBuilder;
-
 /**
  *
  *  It is a common ancestor of all of the application objects.
  *
  */
-public abstract class ObjectBase implements IToStringBuildable
+public abstract class ObjectBase
 {
-
-  @Override
-  public String toString()
-  {
-    return new ToStringBuilder()
-        .append(this)
-        .toString();
-  }
-
-  @Override
-  public void toString(ToStringBuilder builder)
-  {
-  }
 
 }
