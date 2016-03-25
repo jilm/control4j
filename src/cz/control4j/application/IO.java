@@ -26,7 +26,7 @@ import static cz.lidinsky.tools.text.StrUtils.isBlank;
  *  This is a crate object for the module IO definition. It is immutable
  *  object. IO may represent an input or an output.
  */
-public class IO {
+public class IO extends Configurable {
 
   /**
    * The module, this IO belongs to. May not be null.

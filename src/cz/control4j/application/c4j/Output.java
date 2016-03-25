@@ -18,6 +18,8 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
+
 /**
  *
  *  Represents an output element
@@ -48,13 +50,15 @@ public class Output extends Configurable implements IReference {
     this.href = href;
   }
 
-  private int scope;
+  private Scope scope;
 
-  public int getScope() {
+  @Override
+  public Scope getScope() {
     return scope;
   }
 
-  public void setScope(int scope) {
+  @Override
+  public void setScope(Scope scope) {
     this.scope = scope;
   }
 

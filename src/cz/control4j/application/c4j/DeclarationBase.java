@@ -18,6 +18,7 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
 import cz.lidinsky.tools.text.DeclarationReference;
 
 /**
@@ -123,6 +124,27 @@ public abstract class DeclarationBase
       return getDefaultObjectIdentification();
     else
       return declarationReference.toString();
+  }
+
+  private Scope declaredScope;
+
+  /**
+   * To set the scope where this object was declared.
+   *
+   * @param scope
+   *            scope where this object was declared
+   */
+  public void setDeclaredScope(Scope scope) {
+    declaredScope = scope;
+  }
+
+  /**
+   * Returns the scope where this object was declared.
+   *
+   * @return the local scope of this object
+   */
+  public Scope getDeclaredScope() {
+    return declaredScope;
   }
 
 }

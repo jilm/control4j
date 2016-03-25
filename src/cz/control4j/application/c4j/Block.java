@@ -18,6 +18,7 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
 import static cz.lidinsky.tools.text.StrUtils.isBlank;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,15 +58,15 @@ public class Block extends DescriptionBase implements IDefinition {
     this.name = name;
   }
 
-  private int scope;
+  private Scope scope;
 
   @Override
-  public int getScope() {
+  public Scope getScope() {
     return scope;
   }
 
   @Override
-  public void setScope(final int scope) {
+  public void setScope(final Scope scope) {
     this.scope = scope;
   }
 

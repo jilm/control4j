@@ -25,6 +25,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableCollection;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 
 /**
  *
@@ -82,6 +83,10 @@ public class ScopeMap<E extends Object> {
     }
   }
 
+  public Collection<E> getValues() {
+    return buffer.values();
+  }
+
   /**
    *  Returns the value that is associated with given name and scope.
    *
@@ -116,6 +121,16 @@ public class ScopeMap<E extends Object> {
       .set("message", "Missing element!")
       .set("name", name)
       .set("scope", scope);
+  }
+
+  public E getOrCreate(String name, Scope scope, Supplier<E> factory) {
+    try {
+      return get(name, scope);
+    } catch (NoSuchElementException | CommonException e) {
+      E newElement = factory.get();
+      put(name, scope, newElement);
+      return newElement;
+    }
   }
 
   public boolean isEmpty() {

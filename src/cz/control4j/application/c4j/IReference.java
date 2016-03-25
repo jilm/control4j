@@ -18,13 +18,15 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
+
 public interface IReference {
 
   void setHref(String href);
 
   String getHref();
 
-  void setScope(int scope);
+  void setScope(Scope scope);
 
-  int getScope();
+  Scope getScope();
 }

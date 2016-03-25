@@ -25,7 +25,7 @@ import static cz.lidinsky.tools.text.StrUtils.isBlank;
 /**
  *  Keeps signal definition.
  */
-public class Signal {
+public class Signal extends Configurable {
 
   private final String name;
 

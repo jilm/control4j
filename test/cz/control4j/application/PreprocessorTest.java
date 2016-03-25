@@ -17,12 +17,10 @@
 package cz.control4j.application;
 
 import cz.control4j.Module;
-import cz.lidinsky.tools.CommonException;
 import java.util.Collection;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -85,22 +83,6 @@ public class PreprocessorTest {
   }
 
   /**
-   * Test of getModuleInputs method, of class Preprocessor.
-   */
-  @Test
-  @Ignore
-  public void testGetModuleInputs() {
-    System.out.println("getModuleInputs");
-    Module module = null;
-    Preprocessor instance = new Preprocessor();
-    Collection<IO> expResult = null;
-    Collection<IO> result = instance.getModuleInputs(module);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
-  }
-
-  /**
    * Test of getInputMap method, of class Preprocessor.
    */
   @Test
@@ -117,22 +99,6 @@ public class PreprocessorTest {
   }
 
   /**
-   * Test of putModuleOutput method, of class Preprocessor.
-   */
-  @Test
-  @Ignore
-  public void testPutModuleOutput() {
-    System.out.println("putModuleOutput");
-    String name = "";
-    Scope scope = null;
-    Connection connection = null;
-    Preprocessor instance = new Preprocessor();
-    instance.putModuleOutput(name, scope, connection);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
-  }
-
-  /**
    * Test of putModuleIntput method, of class Preprocessor.
    */
   @Test
@@ -142,30 +108,7 @@ public class PreprocessorTest {
     Scope scope = Scope.getGlobal();
     IO input = new IO(new TestModule(), "input1Key");
     Preprocessor instance = new Preprocessor();
-    instance.putModuleIntput(name, scope, input);
-  }
-
-  /**
-   * Test of processModuleInputs method, of class Preprocessor.
-   */
-  @Test
-  public void testProcessModuleInputs() {
-    System.out.println("processModuleInputs");
-    Preprocessor instance = new Preprocessor();
-    instance.putModuleOutput("sig1", Scope.getGlobal(), new Connection(new TestModule(), "key1"));
-    instance.putModuleIntput("sig1", Scope.getGlobal(), new IO(new TestModule(), "key2"));
-    instance.processModuleInputs();
-  }
-
-  /**
-   * Test of processModuleInputs method, of class Preprocessor.
-   */
-  @Test(expected = CommonException.class)
-  public void testProcessModuleInputs1() {
-    System.out.println("processModuleInputs, not appropriate connection for the input");
-    Preprocessor instance = new Preprocessor();
-    instance.putModuleIntput("signal1", Scope.getGlobal(), new IO(new TestModule(), "key"));
-    instance.processModuleInputs();
+    instance.putModuleInput(name, scope, input);
   }
 
 }

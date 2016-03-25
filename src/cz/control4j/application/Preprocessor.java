@@ -19,13 +19,19 @@
 package cz.control4j.application;
 
 import cz.control4j.Module;
+import cz.lidinsky.tools.CommonException;
+import cz.lidinsky.tools.ExceptionCode;
 import static cz.lidinsky.tools.Validate.notNull;
+import cz.lidinsky.tools.text.StrBuffer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -34,13 +40,14 @@ import java.util.stream.Collectors;
 public class Preprocessor {
 
   public Preprocessor() {
-    connections = new ScopeMap<>();
+    outputs = new ArrayDeque<>();
     modules = new ArrayList<>();
     inputs = new ArrayDeque<>();
+    this.signals = new ScopeMap<>();
   }
 
   public void process() {
-
+    processModuleIOs();
   }
 
   //------------------------------------------------------------ Scope pointer.
@@ -94,17 +101,8 @@ public class Preprocessor {
 
   //--------------------------------------------------------------- Module IOs.
 
-  private final ScopeMap<Connection> connections;
-
-  /**
-   * Returns collection of all of the inputs that belongs to the given module.
-   */
-  Collection<IO> getModuleInputs(Module module) {
-    return connections.values().stream()
-      .flatMap(connection -> connection.getConsumers().stream())
-      .filter(input -> input.getModule() == module)
-      .collect(Collectors.toSet());
-  }
+  private final Deque<ReferenceDecorator<IO>> outputs;
+  private final Deque<ReferenceDecorator<IO>> inputs;
 
   /**
    * TODO:
@@ -133,6 +131,42 @@ public class Preprocessor {
     return map;
   }
 
+  /** A data structure for name and scope signal look up. */
+  private final ScopeMap<Signal> signals;
+
+  /**
+   *  Puts given signal into the internal data structure.  A unique order
+   *  number is assigned to the signal (index).
+   *
+   *  @param name
+   *             an identifier of the signal which serves for referencing it
+   *
+   *  @param scope
+   *             a scope under which the signal was defined
+   *
+   *  @param signal
+   *             a signal object to store
+   *
+   *  @throws IllegalArgumentException
+   *             if the name is empty string or a blank string
+   *
+   *  @throws NullPointerException
+   *             if either of the parameters is <code>null</code> value
+   */
+  public void putSignal(String name, Scope scope, Signal signal) {
+    try {
+      signals.put(name, scope, signal);
+    } catch (Exception e) {
+      throw new CommonException()
+        .setCause(e)
+        .setCode(ExceptionCode.SYNTAX_ERROR)
+        .set("message", "Signal definition is not correct!")
+        .set("name", name)
+        .set("scope", scope.toString())
+        .set("signal", signal.toString());
+    }
+  }
+
   /**
    * Adds module output for further processing.
    *
@@ -141,6 +175,7 @@ public class Preprocessor {
    *
    * @param scope
    *            scope from where the signal should be accessed
+   * @param output
    *
    * @param connection
    *            an output to add
@@ -155,11 +190,10 @@ public class Preprocessor {
    *            if there already is the same connection under the different
    *            name and or scope
    */
-  public void putModuleOutput(String name, Scope scope, Connection connection) {
-    connections.put(name, scope, connection);
+  public void putModuleOutput(String name, Scope scope, IO output) {
+    outputs.push(new ReferenceDecorator<>(name, scope, output, output.getKey()));
   }
 
-  private final Deque<ReferenceDecorator<IO>> inputs;
 
   /**
    * Puts a module intput into the internal buffer for further processing.
@@ -173,28 +207,111 @@ public class Preprocessor {
    * @param input
    *            an input to add
    */
-  public void putModuleIntput(String name, Scope scope, IO input) {
-    inputs.add(new ReferenceDecorator<>(name, scope, input, input.getKey()));
-  }
-
-  /**
-   * @throws CommonException
-   *            if there is not appropriate connection (output) for some input
-   */
-  protected void processModuleInputs() {
-    while (!inputs.isEmpty()) {
-      ReferenceDecorator<IO> reference = inputs.pop();
-      // find appropriate connection
-      Connection connection = connections.get(
-          reference.getHref(), reference.getScope());
-      // insert input into it
-      connection.addConsumer(reference.getDecorated());
-    }
+  public void putModuleInput(String name, Scope scope, IO input) {
+    inputs.push(new ReferenceDecorator<>(name, scope, input, input.getKey()));
   }
 
   public void addPropertyReference(ReferenceDecorator<Configurable> reference) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
+
+  public void putDefinition(String name, Scope resolveScope, String value) {
+  }
+
+  public void addModuleInput(ReferenceDecorator<Module> reference) {
+  }
+
+  private List<Connection> connections;
+
+  /**
+   * It takes all of the given IO, group it according to the signal and creates
+   * a connection objects for each group of IO pointing to the same signal.
+   * The result is stored into the connections map.
+   */
+  private void processModuleIOs() {
+
+    Map<Signal, ConnectionCrate> connectionCrates = new HashMap<>();
+
+    // process all of the outputs
+    while (!outputs.isEmpty()) {
+      // get an output
+      ReferenceDecorator<IO> output = outputs.pop();
+      // find appropriate signal object
+      Signal signal = signals.get(output.getHref(), output.getScope());
+      // store the output into the temprary data structure
+      ConnectionCrate crate = getConnectionCrate(connectionCrates, signal);
+      crate.outputs.add(output.getDecorated());
+    }
+
+    // process all of the inputs
+    while (!inputs.isEmpty()) {
+      // get an input
+      ReferenceDecorator<IO> input = inputs.pop();
+      // find appropriate signal object
+      Signal signal = signals.get(input.getHref(), input.getScope());
+      // store it into the temprary data structure
+      ConnectionCrate crate = getConnectionCrate(connectionCrates, signal);
+      crate.inputs.add(input.getDecorated());
+    }
+
+    // check that for all connection objects, there is at least one output per connection
+    Set<Signal> outputless = connectionCrates.values().stream()
+      .filter(c -> (c.outputs.isEmpty() && !c.inputs.isEmpty()))
+      .map(c -> c.signal)
+      .collect(Collectors.toSet());
+    if (!outputless.isEmpty()) {
+      throw new CommonException()
+          .setCode(ExceptionCode.SYNTAX_ERROR)
+          .set("message", "There is a signal, not connected to some output!")
+          .set("signal", outputless.toString());
+    }
+
+    // Check that there is no connection with two or more outputs
+    Set<Signal> manyoutputs = connectionCrates.values().stream()
+      .filter(c -> (c.outputs.size() > 1))
+      .map(c -> c.signal)
+      .collect(Collectors.toSet());
+    // TODO:
+
+    // create final connection objects
+    connections = connectionCrates.values().stream()
+      .filter(c -> c.outputs.size() == 1)
+      .filter(c -> !c.inputs.isEmpty())
+      .map(
+          c -> new Connection(
+            c.outputs.iterator().next(),
+            c.inputs))
+      .collect(Collectors.toList());
+  }
+
+  private class ConnectionCrate {
+    List<IO> inputs;
+    List<IO> outputs;
+    Signal signal;
+
+    ConnectionCrate() {
+      inputs = new ArrayList<>();
+      outputs = new ArrayList<>();
+    }
+  }
+
+  /**
+   * It fi
+   * @param href
+   * @param scope
+   * @return
+   */
+  private ConnectionCrate getConnectionCrate(
+      Map<Signal, ConnectionCrate> crates, Signal signal) {
+    ConnectionCrate crate = crates.get(signal);
+    if (crate == null) {
+      crate = new ConnectionCrate();
+      crate.signal = signal;
+      crates.put(signal, crate);
+    }
+    return crate;
+  }
+
+  private final StrBuffer errors = new StrBuffer();
 
 
 }

@@ -18,6 +18,8 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
+
 /**
  *
  *  Represents a property of some higher level object.
@@ -98,14 +100,14 @@ public class Property extends DeclarationBase implements IReference {
         }
     }
 
-    private int scope;
+    private Scope scope;
 
     /**
      *
      * @return
      */
     @Override
-    public int getScope() {
+    public Scope getScope() {
         return scope;
     }
 
@@ -114,7 +116,7 @@ public class Property extends DeclarationBase implements IReference {
      * @param scope
      */
     @Override
-    public void setScope(int scope) {
+    public void setScope(Scope scope) {
         this.scope = scope;
     }
 

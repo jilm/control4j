@@ -39,7 +39,7 @@ import static cz.lidinsky.tools.Validate.notNull;
  *             it is a datatype of the object which will contain resolved
  *             object
  */
-public class ReferenceDecorator<T> extends DeclarationBase {
+public class ReferenceDecorator<T> extends Configurable {
 
     private final String href;
     private final Scope scope;

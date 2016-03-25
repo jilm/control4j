@@ -18,8 +18,18 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.ScopeHandler;
+import java.util.ArrayList;
+import java.util.List;
+
 public class PrintAdapter extends AbstractAdapter
 {
+
+  public PrintAdapter() {
+    objects = new ArrayList<>();
+  }
+
+  private final List objects;
 
   public void startLevel()
   {
@@ -33,37 +43,65 @@ public class PrintAdapter extends AbstractAdapter
 
   public void put(Module module)
   {
-    System.out.println(module.toString());
+    objects.add(module);
+    System.out.println(
+        new cz.lidinsky.tools.text.Formatter().format(
+            new cz.lidinsky.tools.text.StrIterator(
+                new cz.lidinsky.tools.text.Object2String().toStrBuffer(module))));
   }
 
   public void put(Block block)
   {
-    System.out.println(block.toString());
+    objects.add(block);
+    System.out.println(
+        new cz.lidinsky.tools.text.Formatter().format(
+            new cz.lidinsky.tools.text.StrIterator(
+                new cz.lidinsky.tools.text.Object2String().toStrBuffer(block))));
   }
 
   public void put(Signal signal)
   {
-    System.out.println(signal.toString());
+    objects.add(signal);
+    System.out.println(
+        new cz.lidinsky.tools.text.Formatter().format(
+            new cz.lidinsky.tools.text.StrIterator(
+                new cz.lidinsky.tools.text.Object2String().toStrBuffer(signal))));
   }
 
   public void put(ResourceDef resource)
   {
-    System.out.println(resource.toString());
+    objects.add(resource);
+    System.out.println(
+        new cz.lidinsky.tools.text.Formatter().format(
+            new cz.lidinsky.tools.text.StrIterator(
+                new cz.lidinsky.tools.text.Object2String().toStrBuffer(resource))));
   }
 
   public void put(Define define)
   {
-    System.out.println(define.toString());
+    objects.add(define);
+    System.out.println(
+        new cz.lidinsky.tools.text.Formatter().format(
+            new cz.lidinsky.tools.text.StrIterator(
+                new cz.lidinsky.tools.text.Object2String().toStrBuffer(define))));
   }
 
   public void put(Property property)
   {
-    System.out.println(property.toString());
+    objects.add(property);
+    System.out.println(
+        new cz.lidinsky.tools.text.Formatter().format(
+            new cz.lidinsky.tools.text.StrIterator(
+                new cz.lidinsky.tools.text.Object2String().toStrBuffer(property))));
   }
 
   public void put(Use use)
   {
-    System.out.println(use.toString());
+    objects.add(use);
+    System.out.println(
+        new cz.lidinsky.tools.text.Formatter().format(
+            new cz.lidinsky.tools.text.StrIterator(
+                new cz.lidinsky.tools.text.Object2String().toStrBuffer(use))));
   }
 
   public static void main(String[] args) throws Exception {
@@ -72,10 +110,15 @@ public class PrintAdapter extends AbstractAdapter
     String filename = "C:\\Users\\jilm\\Documents\\projects\\new_heating\\heating.xml";
     cz.lidinsky.tools.xml.XMLReader reader
         = new cz.lidinsky.tools.xml.XMLReader();
-    XMLHandler handler = new XMLHandler();
-    handler.setDestination(new PrintAdapter());
+    XMLHandler handler = new XMLHandler(new ScopeHandler());
+    PrintAdapter instance = new PrintAdapter();
+    handler.setDestination(instance);
     reader.addHandler(handler);
     reader.load(new java.io.File(filename));
+    System.out.println(
+        new cz.lidinsky.tools.text.Formatter().format(
+            new cz.lidinsky.tools.text.StrIterator(
+                new cz.lidinsky.tools.text.Object2String().toStrBuffer(instance.objects))));
     } catch (Exception e) {
       System.out.println("*****");
       System.out.println(e.toString());

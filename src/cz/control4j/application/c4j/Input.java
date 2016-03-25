@@ -18,6 +18,8 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
+
 /**
  *
  *  Represents an input element
@@ -50,15 +52,15 @@ public class Input extends Configurable implements IReference {
     this.href = href;
   }
 
-  private int scope;
+  private Scope scope;
 
   @Override
-  public int getScope() {
+  public Scope getScope() {
     return scope;
   }
 
   @Override
-  public void setScope(int scope) {
+  public void setScope(Scope scope) {
     this.scope = scope;
   }
 

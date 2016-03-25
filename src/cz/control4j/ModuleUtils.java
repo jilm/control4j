@@ -8,8 +8,7 @@ import cz.lidinsky.tools.reflect.Setter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.ResourceBundle;
 
 public class ModuleUtils {
 
@@ -60,21 +59,23 @@ public class ModuleUtils {
    */
   public static void setProperty(Module module, String key, String value) {
     try {
-    // find appropriate method
-    Method setter = getSetterMethod(module.getClass(), key);
-    // recognize the right datatype
-    Class parameterType = getSingleton(setter.getParameterTypes());
-    // convert value
-    Object parsedValue = Tools.parse(parameterType, value);
-    // call the setter method
-    setter.invoke(module, parsedValue);
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      // find appropriate method
+      Method setter = getSetterMethod(module.getClass(), key);
+      // recognize the right datatype
+      Class parameterType = getSingleton(setter.getParameterTypes());
+      // convert value
+      Object parsedValue = Tools.parse(parameterType, value);
+      // call the setter method
+      setter.invoke(module, parsedValue);
+    } catch (IllegalAccessException
+        | IllegalArgumentException | InvocationTargetException e) {
+      ResourceBundle messages = ResourceBundle.getBundle("messages");
       throw new CommonException()
-          .setCause(e)
-          .set("message", "I was not able to set some module property!")
-          .set("module", module)
-          .set("key", key)
-          .set("value", value);
+        .setCause(e)
+        .set("message", messages.getString("Failed to set property of a module!"))
+        .set("module", module)
+        .set("key", key)
+        .set("value", value);
     }
   }
 
@@ -83,15 +84,24 @@ public class ModuleUtils {
    * annotation with value which is equal to the given key.
    *
    * @param _class
+   *
    * @param key
+   *
    * @return
    */
   protected static Method getSetterMethod(Class _class, String key) {
     Method[] methods = _class.getDeclaredMethods();
-    Collection<Method> filtered = Arrays.stream(methods)
-        .filter(method -> cz.lidinsky.tools.Tools.equals(method.getAnnotation(Setter.class).value(), key))
-        .collect(Collectors.toSet());
-    return getSingleton(filtered);
+    return Arrays.stream(methods)
+        .filter(method -> method.getAnnotation(Setter.class) != null)
+        .filter(method -> cz.lidinsky.tools.Tools.equals(
+            method.getAnnotation(Setter.class).value(), key))
+        .findAny()
+        .orElseThrow(
+            () -> new CommonException()
+            .setCode(ExceptionCode.NO_SUCH_ELEMENT)
+            .set("message", "There is not a setter method with given key in the given class!")
+            .set("key", key)
+            .set("class", _class.getName()));
   }
 
   /**

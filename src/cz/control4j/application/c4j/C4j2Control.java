@@ -19,20 +19,24 @@
 package cz.control4j.application.c4j;
 
 import cz.control4j.ModuleUtils;
+import cz.control4j.application.IO;
 import cz.control4j.application.ModuleConfigurableAdapter;
 import cz.control4j.application.ReferenceDecorator;
 import cz.control4j.application.Scope;
 import cz.lidinsky.tools.CommonException;
 import cz.lidinsky.tools.ExceptionCode;
 import static cz.lidinsky.tools.Validate.notNull;
+import cz.lidinsky.tools.text.StrBuffer;
 import static cz.lidinsky.tools.text.StrUtils.isBlank;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  *  An adapter which can translate objects that belongs to this package into
  *  the objects that can be processed by the Preprocessor. Preprocessor is
  *  denoted as a handler.
  */
-public class C4j2Control {
+public class C4j2Control extends AbstractAdapter {
 
   /**
    *  A destination for translated objects.
@@ -42,12 +46,78 @@ public class C4j2Control {
   /**
    *  Initialization.
    *
-   *  @param handler
-   *             the destination of translated objects
    */
-  public C4j2Control(cz.control4j.application.Preprocessor handler) {
-    this.handler = notNull(handler);
+  public C4j2Control() {
+    this.signals = new ArrayDeque<>();
+    this.modules = new ArrayDeque<>();
   }
+
+  public void process(cz.control4j.application.Preprocessor handler) {
+
+    this.handler = notNull(handler);
+
+    // translate all of the signals
+    while (!signals.isEmpty()) {
+      translateSignal(signals.pop());
+    }
+
+    // translate all of the modules
+    while (!modules.isEmpty()) {
+      translateModule(modules.pop());
+    }
+  }
+
+  //---------------------------------- Methods inherited from abstract adapter.
+
+  @Override
+  public void startLevel() {
+    handler.startScope();
+  }
+
+  @Override
+  public void endLevel() {
+    handler.endScope();
+  }
+
+  private final Deque<Module> modules;
+
+  @Override
+  public void put(Module module) {
+    modules.push(module);
+    //translateModule(module);
+  }
+
+  @Override
+  public void put(Block block) {}
+
+  private final Deque<Signal> signals;
+
+  @Override
+  public void put(Signal signal) {
+    signals.push(signal);
+  }
+
+  @Override
+  public void put(ResourceDef resource) {}
+
+  @Override
+  public void put(Define define) {
+/*
+    Scope localScope = handler.getScopePointer();
+      Scope scope =
+          define.getScope() == 0 ? Scope.getGlobal() : localScope;
+      handler.putDefinition(
+          define.getName(),
+          resolveScope(define.getScope(), localScope),
+          define.getValue());
+  */
+    }
+
+  @Override
+  public void put(Property property) {}
+
+  @Override
+  public void put(Use use) {}
 
   /**
    * Translates given module definition into the real module that could be
@@ -61,7 +131,7 @@ public class C4j2Control {
 
     try {
       // The scope of the module
-      Scope localScope = handler.getScopePointer();
+      Scope localScope = moduleDef.getScope();
       // create instance of the module
       cz.control4j.Module module
         = ModuleUtils.createModuleInstance(moduleDef.getClassName());
@@ -72,10 +142,12 @@ public class C4j2Control {
       //translateResources(module, destModule, localScope); // TODO:
 
       // translate input
-      //translateInput(module, destModule, localScope);
+      moduleDef.getInput().stream()
+          .forEach(in -> translateInput(in, module, localScope));
 
       // translate output
-      //translateOutput(module, destModule, localScope);
+      moduleDef.getOutput().stream()
+          .forEach(out -> translateOutput(out, module, localScope));
 
       // translate tagged input
       //for (String tag : module.getInputTags()) {
@@ -88,12 +160,12 @@ public class C4j2Control {
       //}
 
       // send translated module
-      handler.add(module);
+      //handler.add(module);
     } catch (Exception e) {
       throw new CommonException()
         .setCause(e)
         .set("message", "Couldn't create and configure some module!")
-        .set("module definition", moduleDef.toString());
+        .set("module class", moduleDef.getClassName());
     }
   }
 
@@ -120,18 +192,25 @@ public class C4j2Control {
       Scope localScope) {
 
     for (Property srcProperty : source.getConfiguration()) {
+
       String key = srcProperty.getKey();
       String value = srcProperty.getValue();
       String href = srcProperty.getHref();
+
+      // detect not null key
+      if (key == null) {
+      throw new CommonException()
+          .setCode(ExceptionCode.SYNTAX_ERROR)
+          .set("message", "The key attribute of the property is missing!")
+          .set("declaration reference", srcProperty.getDeclarationReferenceText());
+      }
+
       // TODO: detect duplicate keys
       if (isReference(value, href)) {
         // If the property is the reference to some declaration
         ReferenceDecorator<cz.control4j.application.Configurable>
           reference = new ReferenceDecorator<>(
-              href,
-              resolveScope(srcProperty.getScope(), localScope),
-              destination,
-              key);
+              href, srcProperty.getScope(), destination, key);
         reference.setDeclarationReference(
             srcProperty.getDeclarationReference());
         handler.addPropertyReference(reference);
@@ -145,6 +224,41 @@ public class C4j2Control {
       }
     }
   }
+
+  /**
+   * Translates one module input. It means, that new instance of IO class is
+   * created and sent to the preprocessor.
+   *
+   * @param inputDef
+   *
+   * @param module
+   *            the module whose input is translated
+   *
+   * @param localScope
+   *            the scope of the module
+   */
+  protected void translateInput(
+      Input inputDef,
+      cz.control4j.Module module,
+      Scope localScope) {
+
+    try {
+      String key = inputDef.getIndex();
+      String href = inputDef.getHref();
+      Scope scope = inputDef.getScope();
+      IO input = new IO(module, key);
+      input.setDeclarationReference(inputDef.getDeclarationReference());
+      translateConfiguration(inputDef, input, localScope);
+      this.handler.putModuleInput(href, scope, input);
+    } catch (Exception e) {
+      throw new CommonException()
+          .setCause(e)
+          .set("message", "An exception was catched during the module input translation!");
+    }
+  }
+
+  private final StrBuffer errorMessage = new StrBuffer();
+  private boolean error = false;
 
   /**
    * Desides wheather the pair href and value is reference or if it contains
@@ -194,22 +308,52 @@ public class C4j2Control {
   }
 
   /**
+   * Translate the signal definition and hand it over.
    *
-   * @param scopeCode
-   * @param localScope
-   * @return
+   * @param signal
+   *            signal definition to translate
    */
-  protected Scope resolveScope(int scopeCode, Scope localScope) {
-    switch (scopeCode) {
-      case 0:
-        return Scope.getGlobal();
-      case 1:
-        return localScope;
-      case 2:
-        return localScope.getParent();
-      default:
-        throw new IllegalArgumentException();
+  public void translateSignal(Signal signal) {
+
+    Scope localScope = signal.getDeclaredScope();
+    cz.control4j.application.Signal translated
+      = new cz.control4j.application.Signal(
+          Integer.toHexString(localScope.hashCode()) + "@" + signal.getName());
+    translateConfiguration(signal, translated, signal.getScope());
+    // translate tags
+//    for (Tag tag : signal.getTags()) {
+//      cz.control4j.application.Tag translatedTag = new control4j.application.Tag();
+//      translateConfiguration(tag, translatedTag, localScope);
+//      translated.putTag(tag.getName(), translatedTag);
+//    }
+//    // TODO: other signal properties!
+//    if (signal.isDefaultValueSpecified()) {
+//      if (signal.isDefaultValueValid()) {
+//        translated.setValueT_1(signal.getDefaultValue());
+//      } else {
+//        translated.setValueT_1Invalid();
+//      }
+//    }
+    // put signal further
+    handler.putSignal(signal.getName(), localScope, translated);
+  }
+
+  private void translateOutput(
+      Output outputDef, cz.control4j.Module module, Scope localScope) {
+    try {
+      String key = outputDef.getIndex();
+      String href = outputDef.getHref();
+      Scope scope = outputDef.getScope();
+      IO output = new IO(module, key);
+      output.setDeclarationReference(outputDef.getDeclarationReference());
+      translateConfiguration(outputDef, output, localScope);
+      this.handler.putModuleOutput(href, scope, output);
+    } catch (Exception e) {
+      throw new CommonException()
+          .setCause(e)
+          .set("message", "An exception was catched during the module output translation!");
     }
   }
+
 
 }

@@ -18,6 +18,7 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
 import cz.lidinsky.tools.CommonException;
 import cz.lidinsky.tools.ExceptionCode;
 import static cz.lidinsky.tools.Validate.notNull;
@@ -47,15 +48,15 @@ public class Signal extends DescriptionBase implements IDefinition {
       this.name = name;
   }
 
-  private int scope;
+  private Scope scope;
 
   @Override
-  public int getScope() {
+  public Scope getScope() {
     return scope;
   }
 
   @Override
-  public void setScope(int scope) {
+  public void setScope(Scope scope) {
     this.scope = scope;
   }
 

@@ -18,6 +18,8 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
+
 /**
  *
  *  Represents a resource element inside the module.  This object has two
@@ -82,14 +84,14 @@ public class Resource extends Configurable implements IReference {
       this.href = href;
     }
 
-  private int scope;
+  private Scope scope;
 
   /**
    *
    * @return
    */
   @Override
-    public int getScope() {
+    public Scope getScope() {
       //check();
       return scope;
     }
@@ -99,7 +101,7 @@ public class Resource extends Configurable implements IReference {
    * @param scope
    */
   @Override
-    public void setScope(int scope) {
+    public void setScope(Scope scope) {
       this.scope = scope;
     }
 

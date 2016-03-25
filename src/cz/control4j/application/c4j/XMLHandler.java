@@ -18,6 +18,8 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
+import cz.control4j.application.ScopeHandler;
 import cz.lidinsky.tools.CommonException;
 import static cz.lidinsky.tools.Validate.notNull;
 import cz.lidinsky.tools.text.DeclarationReference;
@@ -42,6 +44,8 @@ public class XMLHandler implements IXMLHandler {
    */
   private AbstractAdapter adapter;
 
+  private final ScopeHandler scopeHandler;
+
   protected XMLReader reader;
 
   @Override
@@ -55,8 +59,10 @@ public class XMLHandler implements IXMLHandler {
 
   /**
    *  Initialize file reference to unknown.
+   * @param scopeHandler
    */
-  public XMLHandler() {
+  public XMLHandler(ScopeHandler scopeHandler) {
+    this.scopeHandler = notNull(scopeHandler);
     fileReference = DeclarationReference.getFileRef("<unknown>");
   }
 
@@ -96,19 +102,22 @@ public class XMLHandler implements IXMLHandler {
 
   @AXMLStartElement("/application")
     public boolean startApplication(Attributes attributes) {
-      adapter.startLevel();
+      //adapter.startLevel();
+      scopeHandler.startScope();
       return true;
     }
 
   @AXMLStartElement("application/application")
     public boolean startApplicationApplication(Attributes attributes) {
-      adapter.startLevel();
+      //adapter.startLevel();
+      scopeHandler.endScope();
       return true;
     }
 
   @AXMLEndElement("application")
     public boolean endApplication() {
-      adapter.endLevel();
+      //adapter.endLevel();
+      scopeHandler.endScope();
       return true;
     }
 
@@ -429,6 +438,7 @@ public class XMLHandler implements IXMLHandler {
       module = new Module()
         .setClassName(attributes.getValue("class"));
       setDeclarationReference(module);
+      module.setScope(scopeHandler.getScopePointer());
       return true;
     }
 
@@ -554,10 +564,13 @@ public class XMLHandler implements IXMLHandler {
     return property;
   }
 
-  private void setDefinition(IDefinition object, Attributes attributes) {
+  private void setDefinition(
+      IDefinition object, Attributes attributes) {
     try {
       object.setName(attributes.getValue("name"));
-      object.setScope(Parser.parseScope2(attributes.getValue("scope")));
+      object.setScope(resolveScope(
+          Parser.parseScope2(
+              attributes.getValue("scope")), scopeHandler.getScopePointer()));
     } catch (Exception e) {
       throw new CommonException()
         .setCause(e)
@@ -570,7 +583,9 @@ public class XMLHandler implements IXMLHandler {
   private void setReference(IReference object, Attributes attributes) {
     try {
       object.setHref(attributes.getValue("href"));
-      object.setScope(Parser.parseScope3(attributes.getValue("scope")));
+      object.setScope(resolveScope(
+          Parser.parseScope3(attributes.getValue("scope")),
+          scopeHandler.getScopePointer()));
     } catch (Exception e) {
       throw new CommonException()
         .setCause(e)
@@ -583,6 +598,26 @@ public class XMLHandler implements IXMLHandler {
   protected void setDeclarationReference(DeclarationBase object) {
     if (reader != null) {
       object.setDeclarationReference(fileReference.specify(reader.getLocation()));
+    }
+    object.setDeclaredScope(scopeHandler.getScopePointer());
+  }
+
+  /**
+   *
+   * @param scopeCode
+   * @param localScope
+   * @return
+   */
+  protected Scope resolveScope(int scopeCode, Scope localScope) {
+    switch (scopeCode) {
+      case 0:
+        return Scope.getGlobal();
+      case 1:
+        return localScope;
+      case 2:
+        return localScope.getParent();
+      default:
+        throw new IllegalArgumentException();
     }
   }
 

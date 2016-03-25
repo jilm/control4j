@@ -18,6 +18,7 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
 import cz.lidinsky.tools.CommonException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,7 @@ public class Module extends DescriptionBase {
   private List<Output> output;
   private List<String> inputTags;
   private List<String> outputTags;
+  private Scope scope;
 
   /**
    *  An empty constructor.
@@ -131,6 +133,14 @@ public class Module extends DescriptionBase {
 
   public Collection<String> getOutputTags() {
     return unmodifiableCollection(outputTags);
+  }
+
+  public void setScope(Scope scope) {
+    this.scope = scope;
+  }
+
+  public Scope getScope() {
+    return scope;
   }
 
 }

@@ -18,6 +18,8 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
+
 /**
  *
  *  Represents define element
@@ -38,13 +40,15 @@ public class Define extends DeclarationBase implements IDefinition {
     this.name = name;
   }
 
-  private int scope;
+  private Scope scope;
 
-  public int getScope() {
+  @Override
+  public Scope getScope() {
     return scope;
   }
 
-  public void setScope(final int scope) {
+  @Override
+  public void setScope(final Scope scope) {
     this.scope = scope;
   }
 

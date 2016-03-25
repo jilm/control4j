@@ -18,6 +18,8 @@
 
 package cz.control4j.application.c4j;
 
+import cz.control4j.application.Scope;
+
 /**
  *
  *  Resource definition.
@@ -30,7 +32,7 @@ public class ResourceDef extends DescriptionBase implements IDefinition {
   /**
    *  Initialize fields of this object.
    */
-  public ResourceDef(String className, String name, int scope) {
+  public ResourceDef(String className, String name, Scope scope) {
     setClassName(className);
     setName(name);
     setScope(scope);
@@ -56,7 +58,7 @@ public class ResourceDef extends DescriptionBase implements IDefinition {
 
   /** Identification of this resource definition to be referenced. */
   private String name;
-  private int scope;
+  private Scope scope;
 
   public String getName() {
     //check();
@@ -67,12 +69,14 @@ public class ResourceDef extends DescriptionBase implements IDefinition {
     this.name = name;
   }
 
-  public int getScope() {
+  @Override
+  public Scope getScope() {
     //check();
     return scope;
   }
 
-  public void setScope(int scope) {
+  @Override
+  public void setScope(Scope scope) {
     this.scope = scope;
   }
 
