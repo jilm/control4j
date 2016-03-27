@@ -67,12 +67,17 @@ public class ModuleUtils {
       .filter(anno -> anno.alias().equals(key))
       .mapToInt(anno -> anno.index())
       .findAny()
-      .orElseThrow(
-          () -> new CommonException()
+      .orElseThrow(() -> createBadIOKeyException(moduleClass, key));
+  }
+
+  public static CommonException createBadIOKeyException(
+      Class<? extends Module> moduleClass, String key) {
+
+    return new CommonException()
           .setCode(ExceptionCode.NO_SUCH_ELEMENT)
-          .set("message", "There is not an output with given key!")
+          .set("message", "Given IO key identifier is not supported by this module!")
           .set("key", key)
-          .set("module class", moduleClass.getName()));
+          .set("module class", moduleClass.getName());
   }
 
   /**
