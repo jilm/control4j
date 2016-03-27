@@ -24,6 +24,7 @@ import cz.lidinsky.tools.CommonException;
 import cz.lidinsky.tools.ExceptionCode;
 import static cz.lidinsky.tools.Validate.notNegative;
 import static cz.lidinsky.tools.Validate.notNull;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,7 +80,9 @@ class ControlLoop {
   /**
    *  It does nothing.
    */
-  ControlLoop() { }
+  ControlLoop() {
+    modules = new ArrayList<>();
+  }
 
   /**
    *  Sets the required cycle period in ms.

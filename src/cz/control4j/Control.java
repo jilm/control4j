@@ -3,8 +3,11 @@
 
 package cz.control4j;
 
+import cz.control4j.application.Connection;
 import cz.control4j.application.Preprocessor;
 import cz.control4j.application.ScopeHandler;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -29,6 +32,8 @@ public class Control {
     return applicationLogger;
   }
 
+
+
   /**
    * @param args the command line arguments
    */
@@ -40,9 +45,6 @@ public class Control {
     // load application
     String filename = args[0];
     instance.loadApplication(filename);
-    // create and run control loop
-
-    // TODO code application logic here
   }
 
   private void loadApplication(String filename) throws Exception {
@@ -65,6 +67,27 @@ public class Control {
     // preprocess application
     applicationLogger.info("Going to preprocess the application...");
     preprocessor.process();
+    // sort application
+    applicationLogger.info("Going to sort the application...");
+    Sorter sorter = new Sorter();
+    for (Connection connection : preprocessor.getConnections()) {
+      Module source = connection.getProducer().getModule();
+      connection.getConsumers().stream()
+          .map(in -> in.getModule())
+          .forEach(destination -> sorter.add(source, destination));
+    }
+    List<Module> sortedModules = new ArrayList<>();
+    for (Module module : sorter) {
+      sortedModules.add(module);
+    }
+    // build application
+    applicationLogger.info("Going to build the application...");
+    Builder builder = new Builder(sortedModules, preprocessor.getConnections());
+    // run the application
+    applicationLogger.info("Going to run the application...");
+    int dataBufferSize = preprocessor.getConnections().size();
+    engine = new ControlLoop();
+    engine.run(builder.get(), dataBufferSize);
   }
 
 }

@@ -44,4 +44,13 @@ public abstract class OutputModule extends Module
    */
   protected abstract void get(Signal[] output, int outputLength)
       throws RuntimeException;
+
+  public int getOutputIndex(String key) {
+    return ModuleUtils.getOutputIndex(this.getClass(), key);
+  }
+
+  public int getOutputSize() {
+    return ModuleUtils.getOutputSize(this.getClass());
+  }
+
 }

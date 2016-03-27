@@ -51,9 +51,11 @@ public abstract class InputModule extends Module
     throws RuntimeException;
 
   /**
-   * Return index for input with given key. Default implementation uses
-   * input and output annotations to find out. This method may be overriden
-   * to achieve more complex behaviour.
+   * Returns index for the input with given key. Default implementation uses
+   * input and output annotations to find the index out. This method may be
+   * overriden to achieve more complex behaviour.
+   *
+   * <p>Returned index must be greater or equal to zero.
    *
    * @param key
    *            requested key
@@ -66,10 +68,14 @@ public abstract class InputModule extends Module
    * @throws CommonException
    *            if the module doesn't support inputs at all
    *
-   * @see ModuleUtils#getInputIndex(java.lang.Class, java.lang.String) 
+   * @see ModuleUtils#getInputIndex(java.lang.Class, java.lang.String)
    */
   public int getInputIndex(String key) {
     return ModuleUtils.getInputIndex(this.getClass(), key);
+  }
+
+  public int getInputSize() {
+    return ModuleUtils.getInputSize(this.getClass());
   }
 
 }

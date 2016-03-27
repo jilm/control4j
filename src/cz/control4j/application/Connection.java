@@ -20,7 +20,7 @@ import java.util.Collections;
  *
  * <p>Connection object is immutable.
  */
-class Connection {
+public class Connection {
 
   //private static int counter = 0;
 
@@ -61,7 +61,7 @@ class Connection {
    *
    * @return an immutable collection of all of the inputs
    */
-  Collection<IO> getConsumers() {
+  public Collection<IO> getConsumers() {
     return consumers;
   }
 
@@ -70,7 +70,7 @@ class Connection {
    *
    * @return returns the output
    */
-  IO getProducer() {
+  public IO getProducer() {
     return producer;
   }
 

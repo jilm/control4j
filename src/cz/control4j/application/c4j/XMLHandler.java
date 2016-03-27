@@ -110,7 +110,7 @@ public class XMLHandler implements IXMLHandler {
   @AXMLStartElement("application/application")
     public boolean startApplicationApplication(Attributes attributes) {
       //adapter.startLevel();
-      scopeHandler.endScope();
+      scopeHandler.startScope();
       return true;
     }
 

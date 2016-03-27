@@ -19,10 +19,11 @@
 package cz.control4j;
 
 import cz.lidinsky.tools.CommonException;
-import cz.lidinsky.tools.ExceptionCode;
 import static cz.lidinsky.tools.Validate.notNull;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
-import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
@@ -42,6 +43,7 @@ public class Sorter implements Iterable<Module> {
    */
   public Sorter() {
     this.graph = new DefaultDirectedGraph<>(DefaultEdge.class);
+    this.unresolvedVertices = new ArrayDeque<>();
   }
 
   //--------------------------------------------------------- Public Interface.
@@ -53,8 +55,7 @@ public class Sorter implements Iterable<Module> {
    *
    *  @param module
    *             a module to add into the internal graph
-   *
-   *  @return
+   * @return
    *
    *  @throws CommonException
    *             if the parameter contains <code>null</code> value
@@ -63,23 +64,8 @@ public class Sorter implements Iterable<Module> {
    *             with code <code>DUPLICATE_ELEMENT</code> if there already
    *             is a module with output into the same signal as this one
    */
-  public Sorter addVertex(Module module) {
-    if (graph.addVertex(notNull(module))) {
-      // mark the graph as dirty
-      dirty = true;
-    }
-    return this;
-  }
-
-  /**
-   *  Adds all of the given modules.
-   * @param modules
-   * @return
-   */
-  public Sorter addAll(Iterable<Module> modules) {
-    for (Module module : modules) {
-      addVertex(module);
-    }
+  public Sorter add(Module module) {
+    unresolvedVertices.add(notNull(module));
     return this;
   }
 
@@ -89,8 +75,21 @@ public class Sorter implements Iterable<Module> {
    * @param destination
    * @return
    */
-  public Sorter addEdge(Module source, Module destination) {
+  public Sorter add(Module source, Module destination) {
+    graph.addVertex(source);
+    graph.addVertex(destination);
     graph.addEdge(source, destination);
+    dirty = true;
+    return this;
+  }
+
+  /**
+   *  Adds all of the given modules.
+   * @param modules
+   * @return
+   */
+  public Sorter addAllVertices(Collection<Module> modules) {
+    unresolvedVertices.addAll(modules);
     return this;
   }
 
@@ -107,7 +106,8 @@ public class Sorter implements Iterable<Module> {
    */
   @Override
   public Iterator<Module> iterator() {
-    detectFeedback();
+    // prepare graph
+    process();
     // create iterator
     return new TopologicalOrderIterator<>(graph);
   }
@@ -120,16 +120,135 @@ public class Sorter implements Iterable<Module> {
    */
   private boolean dirty = false;
 
+  private final Deque<Module> unresolvedVertices;
+
+  /**
+   *  Provides preprocessing before the results may be obtained.
+   *
+   *  @throws CommonException
+   *             with code <code>NO_SUCH_ELEMENT</code> if there is no
+   *             source module for some input of some target module
+   *
+   *  @throws CommonException
+   *             with code <code>CYCLIC_DEFINITION</code> if there is an
+   *             unbreakable feedback within the graph
+   */
+  protected void process() {
+    breakFeedback();
+    dirty = false;
+  }
+
   private final DefaultDirectedGraph<Module, DefaultEdge> graph;
 
-  protected void detectFeedback() {
-    CycleDetector<Module, DefaultEdge> cycleDetector
-        = new CycleDetector<>(graph);
-    if (cycleDetector.detectCycles()) {
-      throw new CommonException()
-          .setCode(ExceptionCode.CYCLIC_DEFINITION)
-          .set("message", "There is a feedback!");
-    }
+  private boolean isResolved() {
+    return unresolvedVertices.isEmpty();
+  }
+
+  //------------------------------------------------------- Feedback Treatment.
+
+  /**
+   *  Breaks a feedback, cycle in the directed graph, which contain a
+   *  particular vertex, module.
+   *
+   *  @throws CommonException
+   *             with code <code>CYCLIC_DEFINITION</code> if there is an
+   *             unbreakable feedback within the graph
+   */
+  private void breakFeedback() {
+
+//    CycleDetector<Module, DefaultEdge> cycleDetector
+//        = new CycleDetector<>(graph);
+//    while (cycleDetector.detectCycles()) {
+//      // find cycles
+//      DirectedSimpleCycles<Module, DefaultEdge> cycleFinder
+//        = new TarjanSimpleCycles<>(graph);
+//      List<List<Module>> cycles = cycleFinder.findSimpleCycles();
+//      // go through all of the cycles and break them
+//      for (List<Module> cycle : cycles) {
+//        for (Module srcModule : cycle) {
+//          Collection<Module> destModules
+//            = Graphs.successorListOf(graph, srcModule);
+//          destModules = CollectionUtils.intersection(cycle, destModules);
+//          for (Module destModule : destModules) {
+//            if (hasEdgeDefaultValue(srcModule, destModule)) {
+//              breakEdge(srcModule, destModule);
+//              return;
+//            }
+//          }
+//        }
+//        // The cycle is not breakable
+//        throw new CommonException()
+//          .setCode(ExceptionCode.CYCLIC_DEFINITION)
+//          .set("message", "The graph contains unbreakable cycle!");
+//      }
+//    }
 
   }
+
+  /**
+   *  Returns true if and only if all of the signals that are connected
+   *  from source module to the target module has default values defined.
+   *  If there is no such connection between the given modules, it returns
+   *  false.
+   */
+//  private boolean hasEdgeDefaultValue(Module source, Module target) {
+//    boolean connected = false; // if there is connection between modules
+//    for (IO output : source.getOutput()) {
+//      for (IO input : target.getInput()) {
+//        if (output.isConnected() && input.isConnected()
+//            && output.getPointer() == input.getPointer()) {
+//          connected = true;
+//          if (!input.getSignal().isValueT_1Specified()) {
+//            return false;
+//          }
+//        }
+//      }
+//    }
+//    return connected;
+//  }
+
+//  /**
+//   *  Breaks the direct connection between two modules.
+//   */
+//  private void breakEdge(Module source, Module target) {
+//    // remove the broken edge from the graph
+//    graph.removeEdge(source, target);
+//    for (IO output : source.getOutput()) {
+//      for (IO input : target.getInput()) {
+//        if (output.isConnected() && input.isConnected()
+//            && output.getPointer() == input.getPointer()) {
+//          // if the signal connects the given modules, break it
+//          // Create a shared handover place.
+//          MutableObject<control4j.Signal> sharedSignal
+//            = new MutableObject<>();
+//          sharedSignal.setValue(
+//              input.getSignal().isValueT_1Valid()
+//              ? control4j.Signal.getSignal(input.getSignal().getValueT_1())
+//              : control4j.Signal.getSignal());
+//          // Create new signal place for the source module
+//          int brokenPointer = getSignalCount();
+//          signalIndex[output.getPointer()] = null;
+//          output.setPointer(brokenPointer);
+//          setSourceModule(brokenPointer, source);
+//          // Create new output module.
+//          FeedbackModule outModule = new FeedbackModule(
+//              FeedbackModule.OUTPUT_CLASSNAME, sharedSignal);
+//          IO brokenOutput = new IO();
+//          brokenOutput.setPointer(input.getPointer());
+//          outModule.putOutput(0, brokenOutput);
+//          add(outModule);
+//          // Create new input module
+//          FeedbackModule inModule = new FeedbackModule(
+//              FeedbackModule.INPUT_CLASSNAME, sharedSignal);
+//          IO brokenInput = new IO();
+//          brokenInput.setPointer(brokenPointer);
+//          brokenInput.setSignal(input.getSignal());
+//          inModule.putInput(0, brokenInput);
+//          add(inModule);
+//          unresolvedVertices.add(target);
+//        }
+//      }
+//    }
+//  }
+
 }

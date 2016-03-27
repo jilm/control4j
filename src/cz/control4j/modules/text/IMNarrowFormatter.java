@@ -24,6 +24,9 @@ import cz.control4j.Signal;
 import cz.control4j.SignalFormat;
 import cz.control4j.VariableInput;
 import cz.lidinsky.tools.reflect.Setter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -79,7 +82,7 @@ public class IMNarrowFormatter extends InputModule {
 
   private SignalFormat signalFormat;
 
-  private String[] labels;
+  private final List<String> labels = new ArrayList<>();
 
   /**
    *  Initialize the formatter. It uses variables: language, country
@@ -129,6 +132,20 @@ public class IMNarrowFormatter extends InputModule {
     }
 */
 
+  @Override
+  public void prepare() {
+    Locale locale;
+    if (language == null) {
+      locale = Locale.getDefault();
+    } else if (country == null) {
+      locale = new Locale(language);
+    } else {
+      locale = new Locale(language, country);
+    }
+    signalFormat = new SignalFormat(locale);
+    signalFormat.setMaximumFractionDigits(maxFractionDigits);
+  }
+
   /**
    *  Prints input signals on the text device in the human readable
    *  form. Signals are printed on separate lines. First input
@@ -150,9 +167,16 @@ public class IMNarrowFormatter extends InputModule {
     if (input[0] == null || (input[0].isValid() && input[0].getBoolean())) {
       for (int i=1; i<inputLength; i++) {
         System.out.println(input[i].toString(
-            signalFormat, delimiter, labels[i - 1]));
+            signalFormat, delimiter, labels.get(i - 1)));
       }
     }
+  }
+
+  @Override
+  public int getInputIndex(String key) {
+    if ("en".equals(key)) return 0;
+    labels.add(key);
+    return labels.indexOf(key) + 1;
   }
 
 }

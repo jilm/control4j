@@ -27,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -55,32 +54,20 @@ public class ModuleUtilsTest {
   public void tearDown() {
   }
 
-  /**
-   * Test of getInputIndex method, of class ModuleUtils.
-   */
-  @Test
-  @Ignore
-  public void testGetInputIndex() {
-    System.out.println("getInputIndex");
-    Class<? extends Module> moduleClass = null;
-    String key = "";
-    int expResult = 0;
-    int result = ModuleUtils.getInputIndex(moduleClass, key);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
-  }
-
   class TestModule2 extends Module {
+
     String strProperty;
+
     @Setter("strPropertyKey") void setStrProperty(String value) {
       this.strProperty = value;
     }
     int intProperty;
+
     @Setter("intPropertyKey") void setIntProperty(int value) {
       this.intProperty = value;
     }
   }
+
 
   /**
    * Test of setProperty method, of class ModuleUtils.
@@ -182,4 +169,78 @@ public class ModuleUtilsTest {
     String className = null;
     ModuleUtils.createModuleInstance(className);
   }
+
+  @Input(alias="in1", index=2)
+  @Input(alias="in2", index=5)
+  class TestModule3 extends Module{}
+
+  @Output(alias="out1", index=0)
+  class TestModule4 extends Module{}
+
+  /**
+   * Test of getInputSize method, of class ModuleUtils.
+   */
+  @Test
+  public void testGetInputSize() {
+    System.out.println("getInputSize");
+    int result = ModuleUtils.getInputSize(TestModule3.class);
+    assertEquals(6, result);
+    result = ModuleUtils.getInputSize(TestModule4.class);
+    assertEquals(0, result);
+  }
+
+  /**
+   * Test of getOutputSize method, of class ModuleUtils.
+   */
+  @Test
+  public void testGetOutputSize() {
+    System.out.println("getOutputSize");
+    int result = ModuleUtils.getOutputSize(TestModule3.class);
+    assertEquals(0, result);
+    result = ModuleUtils.getOutputSize(TestModule4.class);
+    assertEquals(1, result);
+  }
+
+  /**
+   * Test of getOutputIndex method, of class ModuleUtils.
+   */
+  @Test
+  public void testGetOutputIndex1() {
+    System.out.println("getOutputIndex1");
+    int result = ModuleUtils.getOutputIndex(TestModule4.class, "out1");
+    assertEquals(0, result);
+  }
+
+  /**
+   * Test of getOutputIndex method, of class ModuleUtils.
+   */
+  @Test(expected=CommonException.class)
+  public void testGetOutputIndex2() {
+    System.out.println("getOutputIndex2");
+    int result = ModuleUtils.getOutputIndex(TestModule4.class, "aaa");
+    fail();
+  }
+
+  /**
+   * Test of getInputIndex method, of class ModuleUtils.
+   */
+  @Test
+  public void testGetInputIndex1() {
+    System.out.println("getInputIndex");
+    int result = ModuleUtils.getInputIndex(TestModule3.class, "in1");
+    assertEquals(2, result);
+    result = ModuleUtils.getInputIndex(TestModule3.class, "in2");
+    assertEquals(5, result);
+  }
+
+  /**
+   * Test of getOutputIndex method, of class ModuleUtils.
+   */
+  @Test(expected=CommonException.class)
+  public void testGetInputIndex2() {
+    System.out.println("getInputIndex2");
+    int result = ModuleUtils.getInputIndex(TestModule4.class, "aaa");
+    fail();
+  }
+
 }

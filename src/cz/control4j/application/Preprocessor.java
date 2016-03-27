@@ -27,6 +27,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -97,6 +98,10 @@ public class Preprocessor {
    */
   public void add(Module module) {
     modules.add(notNull(module));
+  }
+
+  public List<Module> getModules() {
+    return Collections.unmodifiableList(modules);
   }
 
   //--------------------------------------------------------------- Module IOs.
@@ -221,6 +226,10 @@ public class Preprocessor {
   }
 
   private List<Connection> connections;
+
+  public List<Connection> getConnections() {
+    return Collections.unmodifiableList(connections);
+  }
 
   /**
    * It takes all of the given IO, group it according to the signal and creates

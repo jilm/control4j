@@ -56,4 +56,21 @@ public abstract class ProcessModule extends Module
   public abstract void process(
       Signal[] input, int inputLength, Signal[] output, int outputLength)
     throws RuntimeException;
+
+  public int getInputIndex(String key) {
+    return ModuleUtils.getInputIndex(this.getClass(), key);
+  }
+
+  public int getOutputIndex(String key) {
+    return ModuleUtils.getOutputIndex(this.getClass(), key);
+  }
+
+  public int getInputSize() {
+    return ModuleUtils.getInputSize(this.getClass());
+  }
+
+  public int getOutputSize() {
+    return ModuleUtils.getOutputSize(this.getClass());
+  }
+
 }

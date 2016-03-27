@@ -40,7 +40,39 @@ public class ModuleUtils {
           () -> new CommonException()
           .setCode(ExceptionCode.NO_SUCH_ELEMENT)
           .set("message", "There is not an input with given key!")
-          .set("key", key));
+          .set("key", key)
+          .set("module class", moduleClass.getName()));
+  }
+
+  public static int getInputSize(Class<? extends Module> moduleClass) {
+    Input[] inputAnno = moduleClass.getDeclaredAnnotationsByType(Input.class);
+    return Arrays.stream(inputAnno)
+      .mapToInt(anno -> anno.index())
+      .max()
+      .orElse(-1) + 1;
+  }
+
+  public static int getOutputSize(Class<? extends Module> moduleClass) {
+    Output[] outputAnno = moduleClass.getDeclaredAnnotationsByType(Output.class);
+    return Arrays.stream(outputAnno)
+      .mapToInt(anno -> anno.index())
+      .max()
+      .orElse(-1) + 1;
+  }
+
+  public static int getOutputIndex(
+      Class<? extends Module> moduleClass, String key) {
+    Output[] outputAnno = moduleClass.getDeclaredAnnotationsByType(Output.class);
+    return Arrays.stream(outputAnno)
+      .filter(anno -> anno.alias().equals(key))
+      .mapToInt(anno -> anno.index())
+      .findAny()
+      .orElseThrow(
+          () -> new CommonException()
+          .setCode(ExceptionCode.NO_SUCH_ELEMENT)
+          .set("message", "There is not an output with given key!")
+          .set("key", key)
+          .set("module class", moduleClass.getName()));
   }
 
   /**
