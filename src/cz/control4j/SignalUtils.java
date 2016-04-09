@@ -18,8 +18,7 @@
 
 package cz.control4j;
 
-import cz.lidinsky.tools.CommonException;
-import cz.lidinsky.tools.ExceptionCode;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -92,4 +91,35 @@ public class SignalUtils
       }
     }
   }
+
+  public static int getValidityStatus(Signal[] input, int inputLength) {
+    if (inputLength < 0 && inputLength > Integer.BYTES * 8) {
+      throw new IllegalArgumentException();
+    } else {
+      int result = 0;
+      for (int i = 0; i < inputLength; i++) {
+        result *= 2;
+        result |= input.length > i && input[i] != null && input[i].isValid()
+            ? 1 : 0;
+      }
+      return result;
+    }
+  }
+
+  public static double getValue(Signal[] input, int inputLength, int index) {
+    if (index < input.length
+        && index < inputLength
+        && input[index] != null
+        && input[index].isValid()) {
+      return input[index].getValue();
+    } else {
+      return Double.NaN;
+    }
+  }
+
+  public static boolean allValid(Signal[] signals, int length) {
+    return Arrays.stream(signals, 0, length)
+      .allMatch(signal -> signal != null && signal.isValid());
+  }
+
 }

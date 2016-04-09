@@ -18,6 +18,7 @@
 
 package cz.control4j.application;
 
+import cz.lidinsky.tools.text.DeclarationReference;
 import cz.lidinsky.tools.tree.AbstractNode;
 import cz.lidinsky.tools.tree.INode;
 
@@ -39,7 +40,12 @@ public class Scope extends AbstractNode<Scope> implements INode<Scope>
 {
 
   /** The global scope */
-  private static final Scope global = new Scope();
+  private static final Scope global;
+
+  static {
+    global = new Scope();
+    global.reference = DeclarationReference.get("Global scope");
+  }
 
   /**
    *  Returns the global scope.
@@ -65,6 +71,17 @@ public class Scope extends AbstractNode<Scope> implements INode<Scope>
    */
   public Scope(Scope parent) {
     parent.addChild(this);
+  }
+
+  private DeclarationReference reference;
+
+  @Override
+  public String toString() {
+    if (reference != null) {
+      return "A scope object, declaration reference: " + reference.toString();
+    } else {
+      return super.toString();
+    }
   }
 
 }

@@ -76,14 +76,14 @@ public class PMMultiplexer extends ProcessModule {
   public int getInputIndex(String key) {
     int index;
     try {
-      index = Integer.parseInt(key);
+      index = Integer.parseInt(key.trim());
     } catch (NumberFormatException e) {
-      index = ModuleUtils.getInputIndex(this.getClass(), key);
+      return ModuleUtils.getInputIndex(this.getClass(), key);
     }
     if (index < 0) {
       throw ModuleUtils.createBadIOKeyException(this.getClass(), key);
     } else {
-      return index;
+      return index + 1;
     }
   }
 

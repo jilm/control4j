@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package cz.control4j;
 
 import cz.control4j.application.Connection;
@@ -78,16 +77,23 @@ public class Builder {
 
     // for each module, create a module crate together with the io maps
     for (Module module : modules) {
-      int[] inputMap
-          = module instanceof InputModule || module instanceof ProcessModule
-          ? createMap(inputMaps.get(module))
-          : null;
-      int[] outputMap
-          = module instanceof OutputModule || module instanceof ProcessModule
-          ? createMap(outputMaps.get(module))
-          : null;
-      ModuleCrate crate = ModuleCrate.create(module, inputMap, outputMap);
-      crates.add(crate);
+      try {
+        int[] inputMap
+            = module instanceof InputModule || module instanceof ProcessModule
+                ? createMap(inputMaps.get(module))
+                : null;
+        int[] outputMap
+            = module instanceof OutputModule || module instanceof ProcessModule
+                ? createMap(outputMaps.get(module))
+                : null;
+        ModuleCrate crate = ModuleCrate.create(module, inputMap, outputMap);
+        crates.add(crate);
+      } catch (Exception e) {
+        throw new CommonException()
+            .setCause(e)
+            .set("message", "An exception while creating module IO maps!")
+            .set("module class", module.getClass().getName());
+      }
     }
   }
 
@@ -100,15 +106,19 @@ public class Builder {
    */
   private int[] createMap(List<IOElement> index) {
 
-    int size = index.stream()
-        .mapToInt(e -> e.moduleIndex)
-        .max()
-        .orElse(-1) + 1;
-    int[] map = new int[size];
-    Arrays.fill(map, -1);
-    index.stream()
-        .forEach(e -> map[e.moduleIndex] = e.signalPointer);
-    return map;
+    if (index == null) {
+      return new int[0];
+    } else {
+      int size = index.stream()
+          .mapToInt(e -> e.moduleIndex)
+          .max()
+          .orElse(-1) + 1;
+      int[] map = new int[size];
+      Arrays.fill(map, -1);
+      index.stream()
+          .forEach(e -> map[e.moduleIndex] = e.signalPointer);
+      return map;
+    }
 
   }
 
@@ -131,10 +141,10 @@ public class Builder {
     record.signalPointer = pointer;
     if (record.module instanceof OutputModule) {
       record.moduleIndex
-          = ((OutputModule)record.module).getOutputIndex(output.getKey());
+          = ((OutputModule) record.module).getOutputIndex(output.getKey());
     } else if (record.module instanceof ProcessModule) {
       record.moduleIndex
-          = ((ProcessModule)record.module).getOutputIndex(output.getKey());
+          = ((ProcessModule) record.module).getOutputIndex(output.getKey());
     } else {
       throw new CommonException()
           .setCode(ExceptionCode.SYNTAX_ERROR)
@@ -151,10 +161,10 @@ public class Builder {
     record.signalPointer = pointer;
     if (record.module instanceof InputModule) {
       record.moduleIndex
-          = ((InputModule)record.module).getInputIndex(input.getKey());
+          = ((InputModule) record.module).getInputIndex(input.getKey());
     } else if (record.module instanceof ProcessModule) {
       record.moduleIndex
-          = ((ProcessModule)record.module).getInputIndex(input.getKey());
+          = ((ProcessModule) record.module).getInputIndex(input.getKey());
     } else {
       throw new CommonException()
           .setCode(ExceptionCode.SYNTAX_ERROR)
@@ -167,7 +177,9 @@ public class Builder {
 
   private class IOElement {
 
-    /** The module that this io belongs to */
+    /**
+     * The module that this io belongs to
+     */
     Module module;
 
     int moduleIndex;

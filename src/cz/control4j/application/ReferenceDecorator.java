@@ -99,4 +99,8 @@ public class ReferenceDecorator<T> extends Configurable {
         return scope;
     }
 
+    public String getKey() {
+      return key;
+    }
+
 }

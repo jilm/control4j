@@ -45,9 +45,18 @@ public class Preprocessor {
     modules = new ArrayList<>();
     inputs = new ArrayDeque<>();
     this.signals = new ScopeMap<>();
+    this.definitions = new ScopeMap<>();
+    this.references = new ArrayDeque<>();
   }
 
   public void process() {
+    // process definitions
+    while (!references.isEmpty()) {
+      ReferenceDecorator<Configurable> reference = references.pop();
+      processReference(reference);
+    }
+    
+    // process module IOs
     processModuleIOs();
   }
 
@@ -181,9 +190,7 @@ public class Preprocessor {
    * @param scope
    *            scope from where the signal should be accessed
    * @param output
-   *
-   * @param connection
-   *            an output to add
+   * @param reference
    *
    * @throws CommonException
    *            if either of the arguments is null
@@ -196,6 +203,8 @@ public class Preprocessor {
    *            name and or scope
    */
   public void putModuleOutput(String name, Scope scope, IO output) {
+    ReferenceDecorator<IO> decorator = new ReferenceDecorator<>(name, scope, output, output.getKey());
+    decorator.setDeclarationReference(output.getDeclarationReference());
     outputs.push(new ReferenceDecorator<>(name, scope, output, output.getKey()));
   }
 
@@ -216,10 +225,16 @@ public class Preprocessor {
     inputs.push(new ReferenceDecorator<>(name, scope, input, input.getKey()));
   }
 
+  private final Deque<ReferenceDecorator<Configurable>> references;
+
   public void addPropertyReference(ReferenceDecorator<Configurable> reference) {
+    references.add(reference);
   }
 
-  public void putDefinition(String name, Scope resolveScope, String value) {
+  private final ScopeMap<ValueObject> definitions;
+
+  public void putDefinition(String name, Scope scope, String value) {
+    definitions.put(name, scope, new ValueObject(value));
   }
 
   public void addModuleInput(ReferenceDecorator<Module> reference) {
@@ -229,6 +244,12 @@ public class Preprocessor {
 
   public List<Connection> getConnections() {
     return Collections.unmodifiableList(connections);
+  }
+
+  private void processReference(ReferenceDecorator<Configurable> reference) {
+    ValueObject definition = definitions.get(reference.getHref(), reference.getScope());
+    Property property = new Property(definition.getValue());
+    reference.getDecorated().putProperty(reference.getKey(), property);
   }
 
   /**
@@ -242,13 +263,23 @@ public class Preprocessor {
 
     // process all of the outputs
     while (!outputs.isEmpty()) {
-      // get an output
+      // get an output to process
       ReferenceDecorator<IO> output = outputs.pop();
       // find appropriate signal object
-      Signal signal = signals.get(output.getHref(), output.getScope());
-      // store the output into the temprary data structure
-      ConnectionCrate crate = getConnectionCrate(connectionCrates, signal);
-      crate.outputs.add(output.getDecorated());
+      try {
+        Signal signal = signals.get(output.getHref(), output.getScope());
+        // store the output into the temporary data structure
+        ConnectionCrate crate = getConnectionCrate(connectionCrates, signal);
+        crate.outputs.add(output.getDecorated());
+      } catch (CommonException e) {
+        // there is no signal for some output
+        throw new CommonException()
+            .setCause(e)
+            .setCode(ExceptionCode.SYNTAX_ERROR)
+            .set("message", "Signal definition for an output is missing!")
+            .set("name", output.getHref())
+            .set("declaration reference", output.getDeclarationReferenceText());
+      }
     }
 
     // process all of the inputs

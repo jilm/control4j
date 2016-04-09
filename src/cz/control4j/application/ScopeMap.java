@@ -110,11 +110,11 @@ public class ScopeMap<E extends Object> {
         .set("name", name)
         .set("scope", scope);
     }
-    NameScopeKey tempKey = new NameScopeKey(name, scope);
-    while (tempKey.getScope() != null) {
+    while (scope != null) {
+      NameScopeKey tempKey = new NameScopeKey(name, scope);
       E result = buffer.get(tempKey);
       if (result != null) return result;
-      tempKey = new NameScopeKey(name, tempKey.getScope().getParent());
+      scope = scope.getParent();
     }
     throw new CommonException()
       .setCode(ExceptionCode.NO_SUCH_ELEMENT)

@@ -37,7 +37,7 @@ import cz.lidinsky.tools.reflect.Setter;
  *  Output: 0, Scalar constant value which is specified by the value property.
  *             It is always valid and with the actual timestamp.
  */
-@Output(index=0, alias="const", description="Output of constant signal")
+@Output(index=0, alias="out", description="Output of constant signal")
 public class OMConst extends OutputModule {
 
   private double value;

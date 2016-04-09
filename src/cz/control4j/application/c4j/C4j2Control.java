@@ -15,7 +15,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with control4j.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package cz.control4j.application.c4j;
 
 import cz.control4j.ModuleUtils;
@@ -32,29 +31,39 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 /**
- *  An adapter which can translate objects that belongs to this package into
- *  the objects that can be processed by the Preprocessor. Preprocessor is
- *  denoted as a handler.
+ * An adapter which can translate objects that belongs to this package into the
+ * objects that can be processed by the Preprocessor. Preprocessor is denoted as
+ * a handler.
  */
 public class C4j2Control extends AbstractAdapter {
 
   /**
-   *  A destination for translated objects.
+   * A destination for translated objects.
    */
   protected cz.control4j.application.Preprocessor handler;
 
   /**
-   *  Initialization.
+   * Initialization.
    *
    */
   public C4j2Control() {
     this.signals = new ArrayDeque<>();
     this.modules = new ArrayDeque<>();
+    this.definitions = new ArrayDeque<>();
   }
 
   public void process(cz.control4j.application.Preprocessor handler) {
 
     this.handler = notNull(handler);
+
+    // translate definitions
+    while (!definitions.isEmpty()) {
+      Define define = definitions.pop();
+      handler.putDefinition(
+        define.getName(),
+        define.getScope(),
+        define.getValue());
+    }
 
     // translate all of the signals
     while (!signals.isEmpty()) {
@@ -68,7 +77,6 @@ public class C4j2Control extends AbstractAdapter {
   }
 
   //---------------------------------- Methods inherited from abstract adapter.
-
   @Override
   public void startLevel() {
     handler.startScope();
@@ -88,7 +96,8 @@ public class C4j2Control extends AbstractAdapter {
   }
 
   @Override
-  public void put(Block block) {}
+  public void put(Block block) {
+  }
 
   private final Deque<Signal> signals;
 
@@ -98,34 +107,30 @@ public class C4j2Control extends AbstractAdapter {
   }
 
   @Override
-  public void put(ResourceDef resource) {}
+  public void put(ResourceDef resource) {
+  }
+
+  private final Deque<Define> definitions;
 
   @Override
   public void put(Define define) {
-/*
-    Scope localScope = handler.getScopePointer();
-      Scope scope =
-          define.getScope() == 0 ? Scope.getGlobal() : localScope;
-      handler.putDefinition(
-          define.getName(),
-          resolveScope(define.getScope(), localScope),
-          define.getValue());
-  */
-    }
+    definitions.add(define);
+  }
 
   @Override
-  public void put(Property property) {}
+  public void put(Property property) {
+  }
 
   @Override
-  public void put(Use use) {}
+  public void put(Use use) {
+  }
 
   /**
    * Translates given module definition into the real module that could be
    * executed by the runtime machine. The result objects are sent into the
    * preprocessor object.
    *
-   * @param moduleDef
-   *            module definition object to be translated
+   * @param moduleDef module definition object to be translated
    */
   protected void translateModule(Module moduleDef) {
 
@@ -134,7 +139,7 @@ public class C4j2Control extends AbstractAdapter {
       Scope localScope = moduleDef.getScope();
       // create instance of the module
       cz.control4j.Module module
-        = ModuleUtils.createModuleInstance(moduleDef.getClassName());
+          = ModuleUtils.createModuleInstance(moduleDef.getClassName());
       // configure the module
       translateConfiguration(
           moduleDef, new ModuleConfigurableAdapter(module), localScope);
@@ -153,38 +158,31 @@ public class C4j2Control extends AbstractAdapter {
       //for (String tag : module.getInputTags()) {
       //  handler.addInputTag(destModule, tag);
       //}
-
       // translate tagged output
       //for (String tag : module.getOutputTags()) {
       //  handler.addOutputTag(destModule, tag);
       //}
-
       // send translated module
       //handler.add(module);
     } catch (Exception e) {
       throw new CommonException()
-        .setCause(e)
-        .set("message", "Couldn't create and configure some module!")
-        .set("module class", moduleDef.getClassName());
+          .setCause(e)
+          .set("message", "Couldn't create and configure some module!")
+          .set("module class", moduleDef.getClassName());
     }
   }
 
-
   /**
-   *  Copy all of the property objects from the source object to the
-   *  destination object.
+   * Copy all of the property objects from the source object to the destination
+   * object.
    *
-   *  @param source
-   *             the source of configuration object
+   * @param source the source of configuration object
    *
-   *  @param destination
-   *             the destination object for the properties
+   * @param destination the destination object for the properties
    *
-   *  @param localScope
-   *             the scope level of source and destination objects
+   * @param localScope the scope level of source and destination objects
    *
-   *  @throws CommonException
-   *             if something is wrong
+   * @throws CommonException if something is wrong
    */
   protected void translateConfiguration(
       Configurable source,
@@ -199,25 +197,24 @@ public class C4j2Control extends AbstractAdapter {
 
       // detect not null key
       if (key == null) {
-      throw new CommonException()
-          .setCode(ExceptionCode.SYNTAX_ERROR)
-          .set("message", "The key attribute of the property is missing!")
-          .set("declaration reference", srcProperty.getDeclarationReferenceText());
+        throw new CommonException()
+            .setCode(ExceptionCode.SYNTAX_ERROR)
+            .set("message", "The key attribute of the property is missing!")
+            .set("declaration reference", srcProperty.getDeclarationReferenceText());
       }
 
       // TODO: detect duplicate keys
       if (isReference(value, href)) {
         // If the property is the reference to some declaration
-        ReferenceDecorator<cz.control4j.application.Configurable>
-          reference = new ReferenceDecorator<>(
-              href, srcProperty.getScope(), destination, key);
+        ReferenceDecorator<cz.control4j.application.Configurable> reference = new ReferenceDecorator<>(
+            href, srcProperty.getScope(), destination, key);
         reference.setDeclarationReference(
             srcProperty.getDeclarationReference());
         handler.addPropertyReference(reference);
       } else {
         // If the object is in the form of key and value
         cz.control4j.application.Property destProperty
-          = new cz.control4j.application.Property(value);
+            = new cz.control4j.application.Property(value);
         destProperty.setDeclarationReference(
             srcProperty.getDeclarationReference());
         destination.putProperty(key, destProperty);
@@ -231,11 +228,9 @@ public class C4j2Control extends AbstractAdapter {
    *
    * @param inputDef
    *
-   * @param module
-   *            the module whose input is translated
+   * @param module the module whose input is translated
    *
-   * @param localScope
-   *            the scope of the module
+   * @param localScope the scope of the module
    */
   protected void translateInput(
       Input inputDef,
@@ -261,25 +256,21 @@ public class C4j2Control extends AbstractAdapter {
   private boolean error = false;
 
   /**
-   * Desides wheather the pair href and value is reference or if it contains
-   * the value directly. If the href is not blank than returns true, otherwise
+   * Desides wheather the pair href and value is reference or if it contains the
+   * value directly. If the href is not blank than returns true, otherwise
    * returns false.
    *
-   * @param href
-   *            a reference to some other object. It may be null or blank which
-   *            means, the this paire of values is not a reference
+   * @param href a reference to some other object. It may be null or blank which
+   * means, the this paire of values is not a reference
    *
-   * @param value
-   *            a value. It may be null or blank. If it is null, it means that
-   *            given paire of values doesn't denote value, but blank content
-   *            may be valid value, in such a case, content of the href
-   *            parameter is significant.
+   * @param value a value. It may be null or blank. If it is null, it means that
+   * given paire of values doesn't denote value, but blank content may be valid
+   * value, in such a case, content of the href parameter is significant.
    *
    * @return true if the href is not blank and the value is, returns false if
-   *            the href is blank
+   * the href is blank
    *
-   * @throws CommonException
-   *            if both the value and href are not blank
+   * @throws CommonException if both the value and href are not blank
    */
   protected boolean isReference(String value, String href) {
     boolean notAReference = isBlank(href);
@@ -291,34 +282,33 @@ public class C4j2Control extends AbstractAdapter {
     } else if (notAReference && notAValue) {
       // Neither value, nor href was specified for the property!
       throw new CommonException()
-        .setCode(ExceptionCode.ILLEGAL_STATE)
-        .set("message", "Neither value nor href attribute was "
-            + "specified for some property!")
-        .set("value", value)
-        .set("href", href);
+          .setCode(ExceptionCode.ILLEGAL_STATE)
+          .set("message", "Neither value nor href attribute was "
+              + "specified for some property!")
+          .set("value", value)
+          .set("href", href);
     } else {
       // Both, value and href were specified for the property!
       throw new CommonException()
-        .setCode(ExceptionCode.ILLEGAL_STATE)
-        .set("message", "Both value and href attributes were "
-            + "specified for some property!")
-        .set("value", value)
-        .set("href", href);
+          .setCode(ExceptionCode.ILLEGAL_STATE)
+          .set("message", "Both value and href attributes were "
+              + "specified for some property!")
+          .set("value", value)
+          .set("href", href);
     }
   }
 
   /**
    * Translate the signal definition and hand it over.
    *
-   * @param signal
-   *            signal definition to translate
+   * @param signal signal definition to translate
    */
   public void translateSignal(Signal signal) {
 
     Scope localScope = signal.getDeclaredScope();
     cz.control4j.application.Signal translated
-      = new cz.control4j.application.Signal(
-          Integer.toHexString(localScope.hashCode()) + "@" + signal.getName());
+        = new cz.control4j.application.Signal(
+            Integer.toHexString(localScope.hashCode()) + "@" + signal.getName());
     translateConfiguration(signal, translated, signal.getScope());
     // translate tags
 //    for (Tag tag : signal.getTags()) {
@@ -335,7 +325,7 @@ public class C4j2Control extends AbstractAdapter {
 //      }
 //    }
     // put signal further
-    handler.putSignal(signal.getName(), localScope, translated);
+    handler.putSignal(signal.getName(), signal.getScope(), translated);
   }
 
   private void translateOutput(
@@ -354,6 +344,5 @@ public class C4j2Control extends AbstractAdapter {
           .set("message", "An exception was catched during the module output translation!");
     }
   }
-
 
 }
