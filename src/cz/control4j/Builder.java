@@ -161,7 +161,7 @@ public class Builder {
     record.signalPointer = pointer;
     if (record.module instanceof InputModule) {
       record.moduleIndex
-          = ((InputModule) record.module).getInputIndex(input.getKey());
+          = ((InputModule) record.module).getInputIndex(input);
     } else if (record.module instanceof ProcessModule) {
       record.moduleIndex
           = ((ProcessModule) record.module).getInputIndex(input.getKey());

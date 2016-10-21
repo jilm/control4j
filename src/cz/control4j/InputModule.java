@@ -18,6 +18,8 @@
 
 package cz.control4j;
 
+import cz.control4j.application.IO;
+
 /**
  *  Represents an input module, it is the module which takes input but
  *  doesn't provide any output for further processing. Typicaly it may
@@ -72,6 +74,10 @@ public abstract class InputModule extends Module
    */
   public int getInputIndex(String key) {
     return ModuleUtils.getInputIndex(this.getClass(), key);
+  }
+
+  public int getInputIndex(IO input) {
+    return getInputIndex(input.getKey());
   }
 
   public int getInputSize() {

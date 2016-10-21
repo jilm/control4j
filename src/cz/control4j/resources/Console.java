@@ -14,19 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package cz.control4j.resources;
+
+import cz.lidinsky.tools.text.ArticleBuilder;
+import cz.lidinsky.tools.text.Formatter;
+import cz.lidinsky.tools.text.TableBuilder;
 
 /**
- * <p>There are objects for loading an application which is written in the
- * c4j language in this package. There is a complete object model needed
- * to store the application. The objects provides only small integrity checks.
- * It is up to the higher level of the processing to check the data consistency.
  *
- * <p>All of the objects are prepared to hold the so called declaration
- * reference. This kind of information should be in the human readable
- * form and should be sufficient to identify such object whenever
- * necessary.
- *
- * <p>The object XMLHandler is dedicated to load the data structure from the
- * XML document.
  */
-package cz.control4j.application.c4j;
+public class Console {
+
+  public static void main(String[] args) {
+    ArticleBuilder message = new ArticleBuilder("");
+    TableBuilder table = message.appendTable();
+    table.appendValue("label", "outdoor tamp.");
+    table.appendValue("value", "12.5");
+    table.appendValue("unit", "deg. C");
+    String temp = message.serialize();
+    System.out.println(temp);
+    new Formatter().format(temp);
+  }
+}

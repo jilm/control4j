@@ -25,6 +25,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableCollection;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -85,6 +86,14 @@ public class ScopeMap<E extends Object> {
 
   public Collection<E> getValues() {
     return buffer.values();
+  }
+
+  /**
+   *
+   * @return
+   */
+  public Set<NameScopeKey> keySet() {
+    return buffer.keySet();
   }
 
   /**

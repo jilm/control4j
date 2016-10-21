@@ -18,7 +18,7 @@
 
 package cz.control4j.application.c4j;
 
-class AbstractAdapter
+public class AbstractAdapter
 {
 
   public void startLevel() {}

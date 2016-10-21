@@ -140,4 +140,9 @@ public abstract class Configurable extends DeclarationBase {
     }
   }
 
+  @Override
+  public String toString() {
+    return configuration.toString();
+  }
+
 }

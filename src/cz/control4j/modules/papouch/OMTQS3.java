@@ -128,6 +128,10 @@ public class OMTQS3 extends OutputModule implements ICycleEventListener {
         = new SpinelMessage(address, cz.lidinsky.papouch.TQS3.MEASUREMENT);
   }
 
+  public int getAddress() {
+    return this.address;
+  }
+
   private String host;
   private int port;
 
@@ -139,12 +143,20 @@ public class OMTQS3 extends OutputModule implements ICycleEventListener {
     this.host = host;
   }
 
+  public String getHost() {
+    return this.host;
+  }
+
   /**
    * @param port the port to set
    */
   @Setter("port")
   public void setPort(int port) {
     this.port = port;
+  }
+
+  public int getPort() {
+    return this.port;
   }
 
 }

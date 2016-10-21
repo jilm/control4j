@@ -26,7 +26,7 @@ import static cz.lidinsky.tools.text.StrUtils.isBlank;
  *  A key object which consists of a pair: a name and a scope.
  *
  */
-class NameScopeKey {
+public class NameScopeKey {
 
   private String name;
   private Scope scope;

@@ -20,12 +20,14 @@ package cz.control4j.application;
 
 import cz.lidinsky.tools.CommonException;
 import cz.lidinsky.tools.Validate;
+import cz.lidinsky.tools.text.StrBuffer;
+import cz.lidinsky.tools.text.StrBuildable;
 import static cz.lidinsky.tools.text.StrUtils.isBlank;
 
 /**
  *  Keeps signal definition.
  */
-public class Signal extends Configurable {
+public class Signal extends Configurable implements StrBuildable {
 
   private final String name;
 
@@ -98,5 +100,15 @@ public class Signal extends Configurable {
   }
 
   //-------------------------------------------------------------------- Other.
+
+  @Override
+  public void toString(StrBuffer sb) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public String toString() {
+    return super.toString();
+  }
 
 }

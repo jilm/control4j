@@ -14,19 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package cz.control4j.modules;
+
+import cz.control4j.Output;
+import cz.control4j.OutputModule;
+import cz.control4j.RuntimeException;
+import cz.control4j.Signal;
+import cz.control4j.SignalUtils;
 
 /**
- * <p>There are objects for loading an application which is written in the
- * c4j language in this package. There is a complete object model needed
- * to store the application. The objects provides only small integrity checks.
- * It is up to the higher level of the processing to check the data consistency.
  *
- * <p>All of the objects are prepared to hold the so called declaration
- * reference. This kind of information should be in the human readable
- * form and should be sufficient to identify such object whenever
- * necessary.
- *
- * <p>The object XMLHandler is dedicated to load the data structure from the
- * XML document.
+ * @author jilm
  */
-package cz.control4j.application.c4j;
+@Output(alias="out", index=0)
+public class OMRandom extends OutputModule {
+
+  @Override
+  protected void get(Signal[] output, int outputLength) throws RuntimeException {
+    output[0] = SignalUtils.getSignal(Math.random());
+  }
+
+}

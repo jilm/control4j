@@ -47,7 +47,11 @@ public class Block extends DescriptionBase implements IDefinition {
   /** Identification of the block. */
   private String name;
 
-  /** Returns a name, which is identification of the block. */
+  /**
+   * Returns a name, which serves as a block identification.
+   *
+   * @return the name of the block
+   */
   @Override
   public String getName() {
     return name;

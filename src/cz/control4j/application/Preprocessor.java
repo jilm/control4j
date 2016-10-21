@@ -38,24 +38,31 @@ import java.util.stream.Collectors;
 /**
  * Prepare application for execution.
  */
-public class Preprocessor {
+public class Preprocessor implements ApplicationHandler {
 
+  /**
+   * Initialization
+   */
   public Preprocessor() {
-    outputs = new ArrayDeque<>();
-    modules = new ArrayList<>();
-    inputs = new ArrayDeque<>();
+    this.outputs = new ArrayDeque<>();
+    this.modules = new ArrayList<>();
+    this.inputs = new ArrayDeque<>();
     this.signals = new ScopeMap<>();
     this.definitions = new ScopeMap<>();
     this.references = new ArrayDeque<>();
   }
 
+  /**
+   * Process given data.
+   */
   public void process() {
+
     // process definitions
     while (!references.isEmpty()) {
       ReferenceDecorator<Configurable> reference = references.pop();
       processReference(reference);
     }
-    
+
     // process module IOs
     processModuleIOs();
   }
@@ -77,6 +84,7 @@ public class Preprocessor {
   /**
    * Starts new local scope, actual scope becomes parent of the new scope.
    */
+  @Override
   public void startScope() {
     scopePointer = new Scope(scopePointer);
   }
@@ -84,6 +92,7 @@ public class Preprocessor {
   /**
    * Ends current local scope and returns to its parent scope.
    */
+  @Override
   public void endScope() {
     scopePointer = scopePointer.getParent();
   }
@@ -105,6 +114,7 @@ public class Preprocessor {
    * @throws CommonException
    *             if the parameter is null
    */
+  @Override
   public void add(Module module) {
     modules.add(notNull(module));
   }
@@ -149,6 +159,14 @@ public class Preprocessor {
   private final ScopeMap<Signal> signals;
 
   /**
+   *
+   * @return
+   */
+  public ScopeMap<Signal> getSignals() {
+    return signals;
+  }
+
+  /**
    *  Puts given signal into the internal data structure.  A unique order
    *  number is assigned to the signal (index).
    *
@@ -167,6 +185,7 @@ public class Preprocessor {
    *  @throws NullPointerException
    *             if either of the parameters is <code>null</code> value
    */
+  @Override
   public void putSignal(String name, Scope scope, Signal signal) {
     try {
       signals.put(name, scope, signal);
@@ -190,7 +209,6 @@ public class Preprocessor {
    * @param scope
    *            scope from where the signal should be accessed
    * @param output
-   * @param reference
    *
    * @throws CommonException
    *            if either of the arguments is null
@@ -202,6 +220,7 @@ public class Preprocessor {
    *            if there already is the same connection under the different
    *            name and or scope
    */
+  @Override
   public void putModuleOutput(String name, Scope scope, IO output) {
     ReferenceDecorator<IO> decorator = new ReferenceDecorator<>(name, scope, output, output.getKey());
     decorator.setDeclarationReference(output.getDeclarationReference());
@@ -221,22 +240,26 @@ public class Preprocessor {
    * @param input
    *            an input to add
    */
+  @Override
   public void putModuleInput(String name, Scope scope, IO input) {
     inputs.push(new ReferenceDecorator<>(name, scope, input, input.getKey()));
   }
 
   private final Deque<ReferenceDecorator<Configurable>> references;
 
+  @Override
   public void addPropertyReference(ReferenceDecorator<Configurable> reference) {
     references.add(reference);
   }
 
   private final ScopeMap<ValueObject> definitions;
 
+  @Override
   public void putDefinition(String name, Scope scope, String value) {
     definitions.put(name, scope, new ValueObject(value));
   }
 
+  @Override
   public void addModuleInput(ReferenceDecorator<Module> reference) {
   }
 

@@ -34,13 +34,16 @@ import java.util.Deque;
  * An adapter which can translate objects that belongs to this package into the
  * objects that can be processed by the Preprocessor. Preprocessor is denoted as
  * a handler.
+ *
+ * <p>At first it is necessary to use put methods to insert all of the objects.
+ * Then the process method could be called to translate the objects.
  */
 public class C4j2Control extends AbstractAdapter {
 
   /**
    * A destination for translated objects.
    */
-  protected cz.control4j.application.Preprocessor handler;
+  protected cz.control4j.application.ApplicationHandler handler;
 
   /**
    * Initialization.
@@ -52,7 +55,8 @@ public class C4j2Control extends AbstractAdapter {
     this.definitions = new ArrayDeque<>();
   }
 
-  public void process(cz.control4j.application.Preprocessor handler) {
+
+  public void process(cz.control4j.application.ApplicationHandler handler) {
 
     this.handler = notNull(handler);
 
@@ -92,7 +96,7 @@ public class C4j2Control extends AbstractAdapter {
   @Override
   public void put(Module module) {
     modules.push(module);
-    //translateModule(module);
+//    translateModule(module);
   }
 
   @Override
@@ -163,7 +167,7 @@ public class C4j2Control extends AbstractAdapter {
       //  handler.addOutputTag(destModule, tag);
       //}
       // send translated module
-      //handler.add(module);
+      handler.add(module);
     } catch (Exception e) {
       throw new CommonException()
           .setCause(e)
