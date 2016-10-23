@@ -49,6 +49,7 @@ public class IMHistorian extends InputModule implements ICycleEventListener {
   public void prepare() {
     writer = new FileWriter(labels, 1000);
     writer.start(System.currentTimeMillis());
+    Runtime.getRuntime().addShutdownHook(new Thread(writer::close));
   }
 
   @Override
