@@ -38,12 +38,13 @@ public abstract class InputModule extends Module
    *  the processing.
    *
    *  @param input
-   *             input signal values. Inputs that were not assigned contains
+   *             input signal values. Elements that were not assigned contains
    *             null value. This array may be lager than the inputLength.
+   *             It is due to performance improvemnt.
    *
    *  @param inputLength
    *             how many elements in the input array contains an input for
-   *             this function. Don't use elements behind.
+   *             this function. Elements behind should stay untouched.
    *
    *  @throws cz.control4j.RuntimeException
    *             should be thrown only rarely in the extreme situations. If
@@ -58,6 +59,8 @@ public abstract class InputModule extends Module
    * overriden to achieve more complex behaviour.
    *
    * <p>Returned index must be greater or equal to zero.
+   *
+   * TODO: when it is called?
    *
    * @param key
    *            requested key
@@ -76,10 +79,19 @@ public abstract class InputModule extends Module
     return ModuleUtils.getInputIndex(this.getClass(), key);
   }
 
+  /**
+   *
+   * @param input
+   * @return
+   */
   public int getInputIndex(IO input) {
     return getInputIndex(input.getKey());
   }
 
+  /**
+   *
+   * @return
+   */
   public int getInputSize() {
     return ModuleUtils.getInputSize(this.getClass());
   }

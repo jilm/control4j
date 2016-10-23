@@ -25,18 +25,17 @@ import cz.control4j.application.Scope;
 import cz.lidinsky.tools.CommonException;
 import cz.lidinsky.tools.ExceptionCode;
 import static cz.lidinsky.tools.Validate.notNull;
-import cz.lidinsky.tools.text.StrBuffer;
 import static cz.lidinsky.tools.text.StrUtils.isBlank;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 /**
- * An adapter which can translate objects that belongs to this package into the
- * objects that can be processed by the Preprocessor. Preprocessor is denoted as
- * a handler.
+ * An adapter which can translate objects that belongs to this package into
+ * the objects that can be processed by the Preprocessor. Preprocessor is
+ * denoted as handler.
  *
  * <p>At first it is necessary to use put methods to insert all of the objects.
- * Then the process method could be called to translate the objects.
+ * Then the process method must be called in order to translate the objects.
  */
 public class C4j2Control extends AbstractAdapter {
 
@@ -46,8 +45,7 @@ public class C4j2Control extends AbstractAdapter {
   protected cz.control4j.application.ApplicationHandler handler;
 
   /**
-   * Initialization.
-   *
+   * Internal data structures initialization.
    */
   public C4j2Control() {
     this.signals = new ArrayDeque<>();
@@ -55,7 +53,13 @@ public class C4j2Control extends AbstractAdapter {
     this.definitions = new ArrayDeque<>();
   }
 
-
+  /**
+   * Transform previously given classes into form which is acceptable for
+   * the given handler. After this method is called, the object is empty.
+   *
+   * @param handler
+   *            an object to send results
+   */
   public void process(cz.control4j.application.ApplicationHandler handler) {
 
     this.handler = notNull(handler);
@@ -81,6 +85,7 @@ public class C4j2Control extends AbstractAdapter {
   }
 
   //---------------------------------- Methods inherited from abstract adapter.
+
   @Override
   public void startLevel() {
     handler.startScope();
@@ -91,18 +96,21 @@ public class C4j2Control extends AbstractAdapter {
     handler.endScope();
   }
 
+  /** Modules. */
   private final Deque<Module> modules;
 
   @Override
   public void put(Module module) {
     modules.push(module);
-//    translateModule(module);
   }
 
   @Override
   public void put(Block block) {
+    // TODO:
+    throw new UnsupportedOperationException();
   }
 
+  /** Signals. */
   private final Deque<Signal> signals;
 
   @Override
@@ -112,8 +120,11 @@ public class C4j2Control extends AbstractAdapter {
 
   @Override
   public void put(ResourceDef resource) {
+    // TODO:
+    throw new UnsupportedOperationException();
   }
 
+  /** Definitions. */
   private final Deque<Define> definitions;
 
   @Override
@@ -123,18 +134,23 @@ public class C4j2Control extends AbstractAdapter {
 
   @Override
   public void put(Property property) {
+    // TODO:
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void put(Use use) {
+    // TODO:
+    throw new UnsupportedOperationException();
   }
 
   /**
    * Translates given module definition into the real module that could be
    * executed by the runtime machine. The result objects are sent into the
-   * preprocessor object.
+   * handler object.
    *
-   * @param moduleDef module definition object to be translated
+   * @param moduleDef
+   *            module definition object to be translated
    */
   protected void translateModule(Module moduleDef) {
 
@@ -144,12 +160,17 @@ public class C4j2Control extends AbstractAdapter {
       // create instance of the module
       cz.control4j.Module module
           = ModuleUtils.createModuleInstance(moduleDef.getClassName());
+      // call initialize method
+      module.initialize();
       // configure the module
       translateConfiguration(
           moduleDef, new ModuleConfigurableAdapter(module), localScope);
       // translate resource definitions
       //translateResources(module, destModule, localScope); // TODO:
 
+      // initialization method before IO configuration
+      module.beforeIOInitialization(
+          moduleDef.getInput().size(), moduleDef.getOutput().size());
       // translate input
       moduleDef.getInput().stream()
           .forEach(in -> translateInput(in, module, localScope));
@@ -180,13 +201,17 @@ public class C4j2Control extends AbstractAdapter {
    * Copy all of the property objects from the source object to the destination
    * object.
    *
-   * @param source the source of configuration object
+   * @param source
+   *            the source of configuration object
    *
-   * @param destination the destination object for the properties
+   * @param destination
+   *            the destination object for the properties
    *
-   * @param localScope the scope level of source and destination objects
+   * @param localScope
+   *            the scope level of source and destination objects
    *
-   * @throws CommonException if something is wrong
+   * @throws CommonException
+   *            if something is wrong
    */
   protected void translateConfiguration(
       Configurable source,
@@ -210,8 +235,9 @@ public class C4j2Control extends AbstractAdapter {
       // TODO: detect duplicate keys
       if (isReference(value, href)) {
         // If the property is the reference to some declaration
-        ReferenceDecorator<cz.control4j.application.Configurable> reference = new ReferenceDecorator<>(
-            href, srcProperty.getScope(), destination, key);
+        ReferenceDecorator<cz.control4j.application.Configurable> reference
+            = new ReferenceDecorator<>(
+                href, srcProperty.getScope(), destination, key);
         reference.setDeclarationReference(
             srcProperty.getDeclarationReference());
         handler.addPropertyReference(reference);
@@ -232,9 +258,11 @@ public class C4j2Control extends AbstractAdapter {
    *
    * @param inputDef
    *
-   * @param module the module whose input is translated
+   * @param module
+   *            the module whose input is translated
    *
-   * @param localScope the scope of the module
+   * @param localScope
+   *            the scope of the module
    */
   protected void translateInput(
       Input inputDef,
@@ -256,8 +284,8 @@ public class C4j2Control extends AbstractAdapter {
     }
   }
 
-  private final StrBuffer errorMessage = new StrBuffer();
-  private boolean error = false;
+  //private final StrBuffer errorMessage = new StrBuffer();
+  //private boolean error = false;
 
   /**
    * Desides wheather the pair href and value is reference or if it contains the

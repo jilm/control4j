@@ -22,6 +22,7 @@ import cz.control4j.Signal;
 import cz.control4j.SignalUtils;
 import cz.lidinsky.spinel.SpinelException;
 import cz.lidinsky.spinel.SpinelMessage;
+import java.util.concurrent.TimeoutException;
 
 /**
  *
@@ -46,10 +47,17 @@ public class OMAD4 extends Papouch {
             address, cz.lidinsky.papouch.AD4.MEASUREMENT, new int[]{0});
   }
 
+  /**
+   * Returns measured value. The value is from range 0.0 - 1.0
+   *
+   * @param output
+   * @param outputLength
+   */
   @Override
   protected void get(Signal[] output, int outputLength) {
-    if (responseMessage != null) {
+    if (transaction != null && transaction.hasResponse()) {
       try {
+        responseMessage = transaction.get(100);
         int[] values = cz.lidinsky.papouch.AD4.getOneTimeMeasurement(responseMessage);
         int[] status = cz.lidinsky.papouch.AD4.getStatus(responseMessage);
         for (int i = 0; i < Math.min(4, outputLength); i++) {
@@ -60,7 +68,11 @@ public class OMAD4 extends Papouch {
         }
       } catch (SpinelException spinelException) {
         status = 1;
+      } catch (TimeoutException ex) {
+        SignalUtils.fillInvalid(output, outputLength);
       }
+    } else {
+      SignalUtils.fillInvalid(output, outputLength);
     }
   }
 

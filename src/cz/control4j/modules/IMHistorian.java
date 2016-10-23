@@ -21,14 +21,7 @@ import cz.control4j.InputModule;
 import cz.control4j.RuntimeException;
 import cz.control4j.Signal;
 import cz.control4j.application.IO;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import cz.lidinsky.historian.FileWriter;
 
 /**
  * Save input signals into the file. The structure of the file is as follows:
@@ -50,46 +43,44 @@ import java.util.logging.Logger;
  */
 public class IMHistorian extends InputModule implements ICycleEventListener {
 
-  private final List<Meta> metas = new ArrayList<>();
-
-  private float[] buffer;
-  private int bufferIndex = 0;
+  private FileWriter writer;
 
   @Override
   public void prepare() {
-    buffer = new float[1024 * metas.size()];
+    writer = new FileWriter(labels, 1000);
+    writer.start(System.currentTimeMillis());
+  }
 
+  @Override
+  public void beforeIOInitialization(
+      final int declaredInput, final int declaredOutput)
+  {
+    labels = new String[declaredInput];
   }
 
   @Override
   protected void put(Signal[] input, int inputLength) throws RuntimeException {
-    for (int i = 0; i < inputLength; i++) {
-      buffer[bufferIndex + i] = getValue(input[i]);
+    float[] values = new float[inputLength];
+    for (int i=0; i<inputLength; i++) {
+      values[i] = (input[i] == null || !input[i].isValid())
+          ? Float.NaN
+          : (float)input[i].getValue();
     }
-    bufferIndex += inputLength;
-  }
-
-  private float getValue(Signal signal) {
-    if (signal == null || !signal.isValid()) {
-      return Float.NaN;
-    } else {
-      return (float)signal.getValue();
-    }
-  }
-
-  /**
-   *
-   * @param input
-   * @return
-   */
-  @Override
-  public int getInputIndex(IO input) {
-    metas.add(new Meta());
-    return metas.size() - 1;
+    writer.write(values);
   }
 
   @Override
   public void scanStart() {
+  }
+
+  private int inputCounter = 0;
+  private String[] labels;
+
+  @Override
+  public int getInputIndex(IO input) {
+    labels[inputCounter] = input.getKey();
+    inputCounter++;
+    return inputCounter;
   }
 
   @Override
@@ -98,28 +89,6 @@ public class IMHistorian extends InputModule implements ICycleEventListener {
 
   @Override
   public void scanEnd() {
-    if (buffer.length - bufferIndex <= metas.size()) {
-      try (
-          OutputStream os = new FileOutputStream(getFilename());
-          DataOutputStream dos = new DataOutputStream(os);
-          ) {
-      dos.writeInt(metas.size());
-      for (int i = 0; i < bufferIndex; i++) {
-        dos.writeFloat(buffer[i]);
-      }
-      bufferIndex = 0;
-    } catch (IOException ex) {
-        Logger.getLogger(IMHistorian.class.getName()).log(Level.SEVERE, null, ex);
-      }
-    }
-
-  }
-
-  private class Meta {
-  }
-
-  private String getFilename() {
-    return Long.toHexString(System.currentTimeMillis()) + ".rec";
   }
 
 }

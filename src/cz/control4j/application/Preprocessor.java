@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Prepare application for execution.
+ *
  */
 public class Preprocessor implements ApplicationHandler {
 

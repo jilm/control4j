@@ -48,8 +48,11 @@ abstract class Papouch extends OutputModule implements ICycleEventListener {
    */
   @Override
   public void scanStart() {
-    if (request != null) {
+    // Request for temperature
+    if (channel != null) {
       transaction = channel.putRequest(request);
+    } else {
+      transaction = null;
     }
   }
 

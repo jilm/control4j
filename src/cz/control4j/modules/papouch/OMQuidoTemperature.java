@@ -22,6 +22,7 @@ import cz.control4j.Signal;
 import cz.control4j.SignalUtils;
 import cz.lidinsky.spinel.SpinelException;
 import cz.lidinsky.spinel.SpinelMessage;
+import java.util.concurrent.TimeoutException;
 
 /**
  *
@@ -45,13 +46,18 @@ public class OMQuidoTemperature extends Papouch {
 
   @Override
   protected void get(Signal[] output, int outputLength) {
-    if (status == 0) {
+    if (transaction != null && transaction.hasResponse()) {
       try {
+        responseMessage = transaction.get(100);
         double temperature = cz.lidinsky.papouch.Quido.getOneTimeTemperatureMeasurement(responseMessage);
         output[0] = SignalUtils.getSignal(temperature);
       } catch (SpinelException spinelException) {
         status = 1;
+      } catch (TimeoutException ex) {
+        SignalUtils.fillInvalid(output, outputLength);
       }
+    } else {
+      SignalUtils.fillInvalid(output, outputLength);
     }
   }
 

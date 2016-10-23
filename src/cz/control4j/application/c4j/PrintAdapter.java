@@ -44,64 +44,64 @@ public class PrintAdapter extends AbstractAdapter
   public void put(Module module)
   {
     objects.add(module);
-    System.out.println(
-        new cz.lidinsky.tools.text.Formatter().format(
-            new cz.lidinsky.tools.text.StrIterator(
-                new cz.lidinsky.tools.text.Object2String().toStrBuffer(module))));
+//    System.out.println(
+//        new cz.lidinsky.tools.text.Formatter().format(
+//            new cz.lidinsky.tools.text.StrIterator(
+//                new cz.lidinsky.tools.text.Object2String().toStrBuffer(module))));
   }
 
   public void put(Block block)
   {
     objects.add(block);
-    System.out.println(
-        new cz.lidinsky.tools.text.Formatter().format(
-            new cz.lidinsky.tools.text.StrIterator(
-                new cz.lidinsky.tools.text.Object2String().toStrBuffer(block))));
+//    System.out.println(
+//        new cz.lidinsky.tools.text.Formatter().format(
+//            new cz.lidinsky.tools.text.StrIterator(
+//                new cz.lidinsky.tools.text.Object2String().toStrBuffer(block))));
   }
 
   public void put(Signal signal)
   {
     objects.add(signal);
-    System.out.println(
-        new cz.lidinsky.tools.text.Formatter().format(
-            new cz.lidinsky.tools.text.StrIterator(
-                new cz.lidinsky.tools.text.Object2String().toStrBuffer(signal))));
+//    System.out.println(
+//        new cz.lidinsky.tools.text.Formatter().format(
+//            new cz.lidinsky.tools.text.StrIterator(
+//                new cz.lidinsky.tools.text.Object2String().toStrBuffer(signal))));
   }
 
   public void put(ResourceDef resource)
   {
     objects.add(resource);
-    System.out.println(
-        new cz.lidinsky.tools.text.Formatter().format(
-            new cz.lidinsky.tools.text.StrIterator(
-                new cz.lidinsky.tools.text.Object2String().toStrBuffer(resource))));
+//    System.out.println(
+//        new cz.lidinsky.tools.text.Formatter().format(
+//            new cz.lidinsky.tools.text.StrIterator(
+//                new cz.lidinsky.tools.text.Object2String().toStrBuffer(resource))));
   }
 
   public void put(Define define)
   {
     objects.add(define);
-    System.out.println(
-        new cz.lidinsky.tools.text.Formatter().format(
-            new cz.lidinsky.tools.text.StrIterator(
-                new cz.lidinsky.tools.text.Object2String().toStrBuffer(define))));
+//    System.out.println(
+//        new cz.lidinsky.tools.text.Formatter().format(
+//            new cz.lidinsky.tools.text.StrIterator(
+//                new cz.lidinsky.tools.text.Object2String().toStrBuffer(define))));
   }
 
   public void put(Property property)
   {
     objects.add(property);
-    System.out.println(
-        new cz.lidinsky.tools.text.Formatter().format(
-            new cz.lidinsky.tools.text.StrIterator(
-                new cz.lidinsky.tools.text.Object2String().toStrBuffer(property))));
+//    System.out.println(
+//        new cz.lidinsky.tools.text.Formatter().format(
+//            new cz.lidinsky.tools.text.StrIterator(
+//                new cz.lidinsky.tools.text.Object2String().toStrBuffer(property))));
   }
 
   public void put(Use use)
   {
     objects.add(use);
-    System.out.println(
-        new cz.lidinsky.tools.text.Formatter().format(
-            new cz.lidinsky.tools.text.StrIterator(
-                new cz.lidinsky.tools.text.Object2String().toStrBuffer(use))));
+//    System.out.println(
+//        new cz.lidinsky.tools.text.Formatter().format(
+//            new cz.lidinsky.tools.text.StrIterator(
+//                new cz.lidinsky.tools.text.Object2String().toStrBuffer(use))));
   }
 
   public static void main(String[] args) throws Exception {
@@ -115,10 +115,10 @@ public class PrintAdapter extends AbstractAdapter
     handler.setDestination(instance);
     reader.addHandler(handler);
     reader.load(new java.io.File(filename));
-    System.out.println(
-        new cz.lidinsky.tools.text.Formatter().format(
-            new cz.lidinsky.tools.text.StrIterator(
-                new cz.lidinsky.tools.text.Object2String().toStrBuffer(instance.objects))));
+//    System.out.println(
+//        new cz.lidinsky.tools.text.Formatter().format(
+//            new cz.lidinsky.tools.text.StrIterator(
+//                new cz.lidinsky.tools.text.Object2String().toStrBuffer(instance.objects))));
     } catch (Exception e) {
       System.out.println("*****");
       System.out.println(e.toString());

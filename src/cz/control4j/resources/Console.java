@@ -17,7 +17,6 @@
 package cz.control4j.resources;
 
 import cz.lidinsky.tools.text.ArticleBuilder;
-import cz.lidinsky.tools.text.Formatter;
 import cz.lidinsky.tools.text.TableBuilder;
 
 /**
@@ -33,6 +32,6 @@ public class Console {
     table.appendValue("unit", "deg. C");
     String temp = message.serialize();
     System.out.println(temp);
-    new Formatter().format(temp);
+//    new Formatter().format(temp);
   }
 }

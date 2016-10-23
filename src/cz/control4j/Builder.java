@@ -35,7 +35,9 @@ import java.util.stream.Collectors;
  */
 public class Builder {
 
-  public Builder(Collection<Module> modules, Collection<Connection> connections) {
+  public Builder(
+      Collection<Module> modules, Collection<Connection> connections)
+  {
     this.modules = modules;
     this.connections = connections;
   }
@@ -70,10 +72,13 @@ public class Builder {
     createIOIndices();
 
     // group according to modules
-    Map<Module, List<IOElement>> inputMaps = inputIndex.stream()
-        .collect(Collectors.groupingBy(element -> element.module));
-    Map<Module, List<IOElement>> outputMaps = outputIndex.stream()
-        .collect(Collectors.groupingBy(element -> element.module));
+    Map<Module, List<IOElement>> inputMaps
+        = inputIndex.stream()
+          .collect(Collectors.groupingBy(element -> element.module));
+
+    Map<Module, List<IOElement>> outputMaps
+        = outputIndex.stream()
+          .collect(Collectors.groupingBy(element -> element.module));
 
     // for each module, create a module crate together with the io maps
     for (Module module : modules) {
@@ -119,7 +124,6 @@ public class Builder {
           .forEach(e -> map[e.moduleIndex] = e.signalPointer);
       return map;
     }
-
   }
 
   private void createIOIndices() {
@@ -131,8 +135,8 @@ public class Builder {
       for (IO input : connection.getConsumers()) {
         inputIndex.add(createInputRecord(pointer, input));
       }
+      pointer++;
     }
-    pointer++;
   }
 
   private IOElement createOutputRecord(int pointer, IO output) {
