@@ -25,8 +25,7 @@ import cz.lidinsky.spinel.SpinelException;
 import cz.lidinsky.spinel.SpinelMessage;
 
 /**
- *
- *
+ * Provides binary input of the Quido module.
  */
 @Output(alias = "out1", index = 0)
 @Output(alias = "out2", index = 1)
@@ -36,23 +35,24 @@ import cz.lidinsky.spinel.SpinelMessage;
 @Output(alias = "out6", index = 5)
 @Output(alias = "out7", index = 6)
 @Output(alias = "out8", index = 7)
-public class OMQuidoBinary extends Papouch {
+public class OMQuidoBinary extends OMPapouch {
 
   private int status;
 
   /**
    * Creates a request for new measurement.
+   *
+   * @return
    */
   @Override
-  public void prepare() {
-    super.prepare();
-    request
-        = new SpinelMessage(
+  protected SpinelMessage getRequest() {
+    return new SpinelMessage(
             address, Quido.READ_BINARY_INPUT);
   }
 
   @Override
   protected void get(Signal[] output, int outputLength) {
+    SpinelMessage responseMessage = getResponse();
     if (responseMessage != null) {
       try {
         int bin = Quido.getBinaryInput(responseMessage);

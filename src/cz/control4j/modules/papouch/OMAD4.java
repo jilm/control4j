@@ -20,30 +20,28 @@ package cz.control4j.modules.papouch;
 import cz.control4j.Output;
 import cz.control4j.Signal;
 import cz.control4j.SignalUtils;
+import cz.lidinsky.papouch.AD4;
 import cz.lidinsky.spinel.SpinelException;
 import cz.lidinsky.spinel.SpinelMessage;
-import java.util.concurrent.TimeoutException;
 
 /**
- *
- *
+ * Provides AD4 measurement results.
  */
 @Output(alias = "out1", index = 0)
 @Output(alias = "out2", index = 1)
 @Output(alias = "out3", index = 2)
 @Output(alias = "out4", index = 3)
-public class OMAD4 extends Papouch {
+public class OMAD4 extends OMPapouch {
 
   private int status;
 
   /**
    * Creates a request for new measurement.
+   * @return
    */
   @Override
-  public void prepare() {
-    super.prepare();
-    request
-        = new SpinelMessage(
+  protected SpinelMessage getRequest() {
+    return new SpinelMessage(
             address, cz.lidinsky.papouch.AD4.MEASUREMENT, new int[]{0});
   }
 
@@ -51,15 +49,16 @@ public class OMAD4 extends Papouch {
    * Returns measured value. The value is from range 0.0 - 1.0
    *
    * @param output
+   *
    * @param outputLength
    */
   @Override
   protected void get(Signal[] output, int outputLength) {
-    if (transaction != null && transaction.hasResponse()) {
+    SpinelMessage responseMessage = getResponse();
+    if (responseMessage != null) {
       try {
-        responseMessage = transaction.get(100);
-        int[] values = cz.lidinsky.papouch.AD4.getOneTimeMeasurement(responseMessage);
-        int[] status = cz.lidinsky.papouch.AD4.getStatus(responseMessage);
+        int[] values = AD4.getOneTimeMeasurement(responseMessage);
+        int[] status = AD4.getStatus(responseMessage);
         for (int i = 0; i < Math.min(4, outputLength); i++) {
           double value = (double) values[i] / 10000.0d;
           output[i] = ((status[i] & 0x80) == 0)
@@ -68,11 +67,7 @@ public class OMAD4 extends Papouch {
         }
       } catch (SpinelException spinelException) {
         status = 1;
-      } catch (TimeoutException ex) {
-        SignalUtils.fillInvalid(output, outputLength);
       }
-    } else {
-      SignalUtils.fillInvalid(output, outputLength);
     }
   }
 
