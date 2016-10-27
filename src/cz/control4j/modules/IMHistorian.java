@@ -21,7 +21,7 @@ import cz.control4j.InputModule;
 import cz.control4j.RuntimeException;
 import cz.control4j.Signal;
 import cz.control4j.application.IO;
-import cz.lidinsky.historian.FileWriter;
+import cz.control4j.resources.historian.FileWriter;
 
 /**
  * Save input signals into the file. The structure of the file is as follows:
