@@ -23,21 +23,30 @@ import cz.lidinsky.tools.ExceptionCode;
 import static cz.lidinsky.tools.Validate.notNull;
 
 /**
- * Encapsulates a module and IO map.
+ * Encapsulates a module together with the IO map. For application execution
+ * the list of module crates that are in the correcr order is sufficient and
+ * simultaneously necessary. Such a list is created by the
+ * {@link Builder} class.
  */
-abstract class ModuleCrate {
+public abstract class ModuleCrate {
 
   /**
    * Create and return appropriate crate object for the given module.
    *
    * @param module
-   *            the module
+   *            the module which will be wrapped up
    *
    * @param inputMap
+   *            a map which describe connection between the signal pointer
+   *            number and the position inside the given module input array.
+   *            If the given module is just output module, this may be null
    *
    * @param outputMap
+   *            a map which describe connection between the signal pointer
+   *            number and the position inside the given module output array
+   *            If given module is just input moudle, this may be null
    *
-   * @return
+   * @return module crate object
    */
   static ModuleCrate create(
       Module module, int[] inputMap, int[] outputMap) {
@@ -57,16 +66,23 @@ abstract class ModuleCrate {
   }
 
   /**
-   * Executes a given module. If it is input or process module, the input is
+   * Executes given module. If it is input or process module, the input is
    * get from given buffer, module is executed and the output is written back
-   * to the buffer.
+   * to the buffer. Do not call this method directly. It is called regularly
+   * by the Control loop.
    *
    * @param buffer
+   *            the global buffer of signal values
+   *
+   * @throws RuntimeException
+   *            the exception thrown by the module execution method
    */
   abstract void execute(DataBuffer buffer) throws RuntimeException;
 
   /**
-   * Returns the module.
+   * Returns the wrapped module.
+   *
+   * @return the wrapped module
    */
   abstract Module getModule();
 

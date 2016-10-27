@@ -32,21 +32,16 @@ public class PMNot extends ProcessModule
 {
 
   /**
-   *  Perform logical NOT operation on input. It expects one or more
-   *  input signal. For each input signal provides one corresponding
-   *  otput signal which value is logical NOT on input. The output
+   *  Perform logical NOT operation on input. It expects exactly one
+   *  input and one output signal. The otput
    *  signal is invalid if and only if corresponging input signal is
    *  invalid. Timestamp of output signal is copy of timestamp of
    *  correspoing input signal.
    *
-   *  @param input an array of size one or more. It shall not contain
+   *  @param input an array of size one. It shall not contain
    *         null value. Signals are treated to be boolean values.
-   *  @return an array of size equal to input array size. Value of
-   *         signal on each index is logical NOT of signal on input
-   *         with the same index. Signal is invalid if and only if
-   *         input signal with the same index is invalid. Timestamp
-   *         is identical with the corresponding input signal.
    */
+  @Override
   public void process(
       Signal[] input, int inputLength, Signal[] output, int outputLength)
   {

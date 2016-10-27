@@ -30,7 +30,10 @@ public abstract class DescriptionBase extends Configurable
   protected String description;
 
   /**
-   *  Sets the description.
+   * Sets the description.
+   *
+   * @param description
+   *            the descripription of the object
    */
   public void setDescription(String description)
   {
@@ -38,8 +41,10 @@ public abstract class DescriptionBase extends Configurable
   }
 
   /**
-   *  Returns description that was previously assigned.
-   *  May return null value.
+   * Returns description that was previously assigned.
+   * May return null value.
+   *
+   * @return description of the object
    */
   public String getDescription()
   {

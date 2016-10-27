@@ -25,8 +25,6 @@ import static cz.lidinsky.tools.Validate.notNull;
 import cz.lidinsky.tools.text.StrBuffer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -36,12 +34,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- *
+ * Resolves all of the references. It means:
+ * - properties that are given in the form (key, href) pair are replaced by
+ *   (key, value) form.
+ * - Resolves connections between modules which are by nature references to
+ *   the signal objects.
  */
 public class Preprocessor implements ApplicationHandler {
 
   /**
-   * Initialization
+   * Initialize internal structures.
    */
   public Preprocessor() {
     this.outputs = new ArrayDeque<>();
@@ -53,14 +55,23 @@ public class Preprocessor implements ApplicationHandler {
   }
 
   /**
-   * Process given data.
+   * Process given data. This method should be called after all of the data
+   * necessary to process.
    */
   public void process() {
 
-    // process definitions
+    // resolve all of the property references
     while (!references.isEmpty()) {
+      // take a reference
       ReferenceDecorator<Configurable> reference = references.pop();
-      processReference(reference);
+      // find referenced definition
+      ValueObject definition = definitions.get(
+          reference.getHref(), reference.getScope());
+      // TODO: what if there is no appropriate definition
+      // create new property
+      Property property = new Property(definition.getValue());
+      // configure the object
+      reference.getDecorated().putProperty(reference.getKey(), property);
     }
 
     // process module IOs
@@ -119,6 +130,11 @@ public class Preprocessor implements ApplicationHandler {
     modules.add(notNull(module));
   }
 
+  /**
+   * Returns a list of processed modules
+   *
+   * @return unmodifiable list of all of the modules
+   */
   public List<Module> getModules() {
     return Collections.unmodifiableList(modules);
   }
@@ -134,33 +150,33 @@ public class Preprocessor implements ApplicationHandler {
    * @param inputs
    * @return
    */
-  int[] getInputMap(Collection<IO> inputs) {
-    int size = inputs.size();
-    int[] indices = new int[size];
-    int[] pointers = new int[size];
-    int i = 0;
-    int maxIndex = 0;
-    for (IO input : inputs) {
-      String key = input.getKey();
-      //indices[i] = input.getModule().getInputIndex(key);
-      maxIndex = Math.max(maxIndex, indices[i]);
-      pointers[i] = input.getPointer();
-      i++;
-    }
-    int[] map = new int[maxIndex + 1];
-    Arrays.fill(map, -1);
-    for (i = 0; i < size; i++) {
-      map[indices[i]] = pointers[i];
-    }
-    return map;
-  }
+//  int[] getInputMap(Collection<IO> inputs) {
+//    int size = inputs.size();
+//    int[] indices = new int[size];
+//    int[] pointers = new int[size];
+//    int i = 0;
+//    int maxIndex = 0;
+//    for (IO input : inputs) {
+//      String key = input.getKey();
+//      //indices[i] = input.getModule().getInputIndex(key);
+//      maxIndex = Math.max(maxIndex, indices[i]);
+//      pointers[i] = input.getPointer();
+//      i++;
+//    }
+//    int[] map = new int[maxIndex + 1];
+//    Arrays.fill(map, -1);
+//    for (i = 0; i < size; i++) {
+//      map[indices[i]] = pointers[i];
+//    }
+//    return map;
+//  }
 
   /** A data structure for name and scope signal look up. */
   private final ScopeMap<Signal> signals;
 
   /**
    *
-   * @return
+   * @return application signals
    */
   public ScopeMap<Signal> getSignals() {
     return signals;
@@ -208,7 +224,9 @@ public class Preprocessor implements ApplicationHandler {
    *
    * @param scope
    *            scope from where the signal should be accessed
+   *
    * @param output
+   *            an output for processing
    *
    * @throws CommonException
    *            if either of the arguments is null
@@ -222,7 +240,8 @@ public class Preprocessor implements ApplicationHandler {
    */
   @Override
   public void putModuleOutput(String name, Scope scope, IO output) {
-    ReferenceDecorator<IO> decorator = new ReferenceDecorator<>(name, scope, output, output.getKey());
+    ReferenceDecorator<IO> decorator
+        = new ReferenceDecorator<>(name, scope, output, output.getKey());
     decorator.setDeclarationReference(output.getDeclarationReference());
     outputs.push(new ReferenceDecorator<>(name, scope, output, output.getKey()));
   }
@@ -261,18 +280,18 @@ public class Preprocessor implements ApplicationHandler {
 
   @Override
   public void addModuleInput(ReferenceDecorator<Module> reference) {
+    throw new UnsupportedOperationException();
   }
 
   private List<Connection> connections;
 
+  /**
+   * Returns processed connections between modules.
+   *
+   * @return connections between modules
+   */
   public List<Connection> getConnections() {
     return Collections.unmodifiableList(connections);
-  }
-
-  private void processReference(ReferenceDecorator<Configurable> reference) {
-    ValueObject definition = definitions.get(reference.getHref(), reference.getScope());
-    Property property = new Property(definition.getValue());
-    reference.getDecorated().putProperty(reference.getKey(), property);
   }
 
   /**
@@ -357,12 +376,6 @@ public class Preprocessor implements ApplicationHandler {
     }
   }
 
-  /**
-   * It fi
-   * @param href
-   * @param scope
-   * @return
-   */
   private ConnectionCrate getConnectionCrate(
       Map<Signal, ConnectionCrate> crates, Signal signal) {
     ConnectionCrate crate = crates.get(signal);

@@ -45,9 +45,6 @@ public class IO extends Configurable {
    *
    * @param key
    *            in identifier of the IO, may have null or blank value
-   *
-   * @throws CommonException
-   *            if the module is null
    */
   public IO(Module module, String key) {
     this.module = notNull(module);
@@ -81,6 +78,7 @@ public class IO extends Configurable {
   /**
    *
    * @param pointer
+   *            pointer to set
    */
   protected void setPointer(int pointer) {
     this.pointer = pointer;
@@ -88,7 +86,7 @@ public class IO extends Configurable {
 
   /**
    *
-   * @return
+   * @return pointer of the signal
    */
   public int getPointer() {
     return pointer;

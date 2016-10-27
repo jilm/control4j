@@ -24,16 +24,6 @@ import cz.control4j.ProcessModule;
 import cz.control4j.Signal;
 import cz.control4j.SignalUtils;
 
-/**
- *  Compares three signals and returns true only if the third signal
- *  is greater than the first one and smaller than the second one.
- */
-@Input(alias="min", index=0)
-@Input(alias="max", index=1)
-@Input(alias="in", index=2)
-@Output(alias="out", index=0)
-public class PMBetween extends ProcessModule {
-
   /**
    *  Compares three signals and returns true only if the third signal
    *  is greater than the first one and smaller than the second one.
@@ -57,12 +47,13 @@ public class PMBetween extends ProcessModule {
    *  <p>Timestamp of the output signal is set to the timestamp
    *  of corresponding input signal.
    *
-   *  @param input
-   *             must be an array of size at least three elements.
-   *
-   *  @return an array of size that is equat to the size of input
-   *             array minus two
    */
+@Input(alias="min", index=0)
+@Input(alias="max", index=1)
+@Input(alias="in", index=2)
+@Output(alias="out", index=0)
+public class PMBetween extends ProcessModule {
+
   @Override
   public void process(
       Signal[] input, int inputLength, Signal[] output, int outputLength) {

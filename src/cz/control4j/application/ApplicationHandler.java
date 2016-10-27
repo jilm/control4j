@@ -29,9 +29,6 @@ public interface ApplicationHandler {
    *
    * @param module
    *            a module to add
-   *
-   * @throws CommonException
-   *             if the parameter is null
    */
   void add(Module module);
 
@@ -69,17 +66,9 @@ public interface ApplicationHandler {
    *
    * @param scope
    *            scope from where the signal should be accessed
+   *
    * @param output
-   *
-   * @throws CommonException
-   *            if either of the arguments is null
-   *
-   * @throws CommonException
-   *            if there already is connection under the same name and scope
-   *
-   * @throws CommonException
-   *            if there already is the same connection under the different
-   *            name and or scope
+   *            module output object
    */
   void putModuleOutput(String name, Scope scope, IO output);
 

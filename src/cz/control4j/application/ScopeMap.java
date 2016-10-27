@@ -30,10 +30,11 @@ import java.util.function.Supplier;
 
 /**
  *
- *  A key, value data storage, where the key is composed of the
- *  pair: a name and a scope.
+ * A key, value data storage, where the key is composed of the
+ * pair: a name and a scope.
  *
  * @param <E>
+ *            value type
  */
 public class ScopeMap<E extends Object> {
 
@@ -51,10 +52,16 @@ public class ScopeMap<E extends Object> {
   /**
    *  Associates the given value with the specified key and scope.
    *
-   *
    * @param name
+   *            identifier of the given value. The identifier must be unique
+   *            for given scope
+   *
    * @param scope
+   *            an object which thogether with the name represents unique
+   *            identifier for the value
+   *
    * @param value
+   *            the value which will be associater with given name and scope
    */
   public void put(String name, Scope scope, E value) {
     // param check
@@ -89,19 +96,24 @@ public class ScopeMap<E extends Object> {
   }
 
   /**
+   * Return a key set.
    *
-   * @return
+   * @return a key set
    */
   public Set<NameScopeKey> keySet() {
     return buffer.keySet();
   }
 
   /**
-   *  Returns the value that is associated with given name and scope.
+   *  Returns the value that is associated with given name and scope. If no
+   *  value associated with given scope is found, parent of the given scope
+   *  is searched.
    *
    *  @param name
+   *             the identifier (key)
    *
    *  @param scope
+   *             the scope object
    *
    *  @return value that is associated with given name and scope
    *
@@ -142,14 +154,20 @@ public class ScopeMap<E extends Object> {
     }
   }
 
+  /**
+   * Returns true if this object is empty, eg. it doesn't contain any value.
+   *
+   * @return true if this object is empty
+   */
   public boolean isEmpty() {
     return buffer.isEmpty();
   }
 
 
   /**
+   * Returns all of the value objects stored in this object.
    *
-   * @return
+   * @return a collection of all of the values
    */
   public Collection<E> values() {
     if (buffer == null) {

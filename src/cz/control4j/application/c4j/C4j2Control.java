@@ -257,6 +257,7 @@ public class C4j2Control extends AbstractAdapter {
    * created and sent to the preprocessor.
    *
    * @param inputDef
+   *            the object to translate
    *
    * @param module
    *            the module whose input is translated

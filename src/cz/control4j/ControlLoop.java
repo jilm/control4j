@@ -146,18 +146,29 @@ class ControlLoop {
    *   <li>cycle-period
    *   <li>scan-start-delay
    * </ul>
+   *
+   * @param key
+   *            identifier of the property
+   *
+   * @param value
+   *            value for the property
+   *
+   * @return this object
    */
   ControlLoop set(String key, String value) {
     try {
-      if ("cycle-period".equals(key)) {
-        setCyclePeriod(Long.parseLong(value));
-      } else if ("scan-start-delay".equals(key)) {
-        setCyclePeriod(Long.parseLong(value));
-      } else {
-        throw new CommonException()
-            .set("message", "Unknown global property identifier!")
-            .set("key", key)
-            .set("value", value);
+      if (null != key) switch (key) {
+        case "cycle-period":
+          setCyclePeriod(Long.parseLong(value));
+          break;
+        case "scan-start-delay":
+          setCyclePeriod(Long.parseLong(value));
+          break;
+        default:
+          throw new CommonException()
+              .set("message", "Unknown global property identifier!")
+              .set("key", key)
+              .set("value", value);
       }
     } catch (NumberFormatException e) {
       throw new CommonException()
@@ -182,10 +193,8 @@ class ControlLoop {
    *  Runs the infinite control loop. Following steps are performed:
    *
    *  <ol>
-   *    <li> Creates {@link control4j.DataBuffer} instance.
-   *    <li> Runs a {@link control4j.resources.Resource#prepare}
-   *         method for all of the resources.
-   *    <li> Runs a {@link control4j.Module#prepare} method for
+   *    <li> Creates {@link cz.control4j.DataBuffer} instance.
+   *    <li> Runs a {@link cz.control4j.Module#prepare} method for
    *         all of the modules.
    *    <li> Enters an infinite loop.
    *    <li> Note the cycle start time.
@@ -202,7 +211,13 @@ class ControlLoop {
    *         must be cycle-period.
    *  </ol>
    *
-   *  @see control4j.ICycleEventListener
+   *  @param modules
+   *             modules to execute
+   *
+   *  @param bufferSize
+   *             total number of signals
+   *
+   *  @see cz.control4j.ICycleEventListener
    */
   void run(List<ModuleCrate> modules, int bufferSize) {
 
@@ -250,6 +265,9 @@ class ControlLoop {
 
   /**
    * Performs one complete scan.
+   *
+   * @throws cz.control4j.RuntimeException
+   *            if some of the modules throws the exception
    */
   protected void scan() throws RuntimeException {
     scanStartTime = System.currentTimeMillis();
@@ -307,21 +325,21 @@ class ControlLoop {
   }
 
   private void fireCycleStartEvent() {
-    for (ICycleEventListener listener : cycleListeners) {
+    cycleListeners.stream().forEach((listener) -> {
       listener.scanStart();
-    }
+    });
   }
 
   private void fireCycleEndEvent() {
-    for (ICycleEventListener listener : cycleListeners) {
+    cycleListeners.stream().forEach((listener) -> {
       listener.scanEnd();
-    }
+    });
   }
 
   private void fireProcessingStartEvent() {
-    for (ICycleEventListener listener : cycleListeners) {
+    cycleListeners.stream().forEach((listener) -> {
       listener.processingStart();
-    }
+    });
   }
 
   /**
@@ -335,6 +353,9 @@ class ControlLoop {
    *  @param cause
    *             an exception which interrupted control loop, may be
    *             null
+   *
+   *  @param module
+   *             module which was executed last time
    */
   protected void dump(Exception cause, Module module)
   {

@@ -10,6 +10,10 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
+/**
+ * Utilities that helps to work with module objects mainly through the
+ * reflection api.
+ */
 public class ModuleUtils {
 
   /**
@@ -18,6 +22,7 @@ public class ModuleUtils {
    * found is returned.
    *
    * @param moduleClass
+   *            the class to search for the annotation
    *
    * @param key
    *            an identifier of the input
@@ -121,10 +126,12 @@ public class ModuleUtils {
    * annotation with value which is equal to the given key.
    *
    * @param _class
+   *            a class to search
    *
    * @param key
+   *            an identifier of the setter
    *
-   * @return
+   * @return found setter method
    */
   protected static Method getSetterMethod(Class _class, String key) {
     Method[] methods = _class.getDeclaredMethods();

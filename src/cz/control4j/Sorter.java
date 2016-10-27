@@ -55,7 +55,8 @@ public class Sorter implements Iterable<Module> {
    *
    *  @param module
    *             a module to add into the internal graph
-   * @return
+   *
+   *  @return this object
    *
    *  @throws CommonException
    *             if the parameter contains <code>null</code> value
@@ -73,7 +74,7 @@ public class Sorter implements Iterable<Module> {
    *
    * @param source
    * @param destination
-   * @return
+   * @return this object
    */
   public Sorter add(Module source, Module destination) {
     graph.addVertex(source);
@@ -85,8 +86,10 @@ public class Sorter implements Iterable<Module> {
 
   /**
    *  Adds all of the given modules.
+   *
    * @param modules
-   * @return
+   *
+   * @return this object
    */
   public Sorter addAllVertices(Collection<Module> modules) {
     unresolvedVertices.addAll(modules);

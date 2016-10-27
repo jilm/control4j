@@ -58,17 +58,6 @@ public class PMComparator extends ProcessModule
 
   private boolean oldValue = false;
 
-  /**
-   *  Returns result of input signals comparison; hysteresis is taken into
-   *  consideration. Two input signals are expected. First of all, the
-   *  differece between input signals is calculated: diff = input[+] -
-   *  input[-]. True signal is returned for {@ diff >= hysteresis}, false
-   *  signal is returned for diff <= -hysteresis and the output signal stays
-   *  unchanged otherwise.
-   *
-   *  @param input
-   *             must contain two Signal objects
-   */
   @Override
   public void process(
       Signal[] input, int inputLength, Signal[] output, int outputLength)

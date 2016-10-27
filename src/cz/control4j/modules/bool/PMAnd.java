@@ -57,12 +57,6 @@ public class PMAnd extends ProcessModule
    *
    *  @param input an array of size at least one. It shall not
    *            contain null value.
-   *
-   *  @return an array of size one. It contains Signal whose value
-   *            is logical AND on the input signals. Returned signal
-   *            is valid as long as it is possible to infer the
-   *            output value. Timestamp corresponds to the system
-   *            time in moment of module invocation.
    */
   @Override
   public void process(

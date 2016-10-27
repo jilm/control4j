@@ -26,37 +26,38 @@ import cz.control4j.SignalUtils;
 import cz.lidinsky.tools.reflect.Setter;
 
 /**
- *  TODO:
- *
- *  <p>
- *  </p>
- *
- *  <h3>Resources</h3>
- *  <table>
- *      <tr>
- *          <td>table-name</td>
- *          <td></td>
- *          <td>A name of the table to insert to. The string value is
- *          expected.</td>
- *      </tr>
- *  </table>
+ *  Doesn't allow the input signal to exceed given limits. It takes one
+ *  input and provides tree outputs. The first output is always between
+ *  given limits. If the input is lower then min-limit, than the first
+ *  output is min-limit and second output is true. If the input is
+ *  greater than max-limit than the first output is max-limit and the
+ *  threed output is true. If the input is between limits than the
+ *  output is equal to the input and the second and threed outputs are
+ *  false. If the input is invalid than all of the outputs are invalid.
  *
  *  <h3>Property</h3>
- *  <table>
+ *  <table><caption>Properties</caption>
  *      <tr>
- *          <td>message</td>
- *          <td>The message which will be written into the log.</td>
+ *          <td>minLimit</td>
+ *          <td>The minimum value for the output signal.</td>
+ *      </tr>
+ *      <tr>
+ *          <td>maxLimit</td>
+ *          <td>The maximum value for the output signal.</td>
  *      </tr>
  *  </table>
  *
  *  <h3>IO</h3>
- *  <table>
+ *  <table><caption>IO</caption>
  *      <tr>
- *          <td>Input</td>
- *          <td>0</td>
- *          <td>The control input; it expects scalar boolean signal. The
- *          application exits after the value on this input becomes valid
- *          true.</td>
+ *          <td>Input</td><td>0</td>
+ *          <td>Input signal</td>
+ *      </tr>
+ *      <tr>
+ *          <td>Output</td><td>0</td>
+ *          <td>As long as the input signal is between given limits, this is
+ *          the copy of input signal. If the input is out of given limit, it
+ *          contains the limit value.</td>
  *      </tr>
  *  </table>
  */
@@ -80,16 +81,6 @@ public class PMSaturation extends ProcessModule {
     this.maxLimit = maxLimit;
   }
 
-  /**
-   *  Doesn't allow the input signal to exceed given limits. It takes one
-   *  input and provides tree outputs. The first output is always between
-   *  given limits. If the input is lower then min-limit, than the first
-   *  output is min-limit and second output is true. If the input is
-   *  greater than max-limit than the first output is max-limit and the
-   *  threed output is true. If the input is between limits than the
-   *  output is equal to the input and the second and threed outputs are
-   *  false. If the input is invalid than all of the outputs are invalid.
-   */
   @Override
   public void process(
       Signal[] input, int inputLength, Signal[] output, int outputLength) {

@@ -47,11 +47,19 @@ public class ReferenceDecorator<T> extends Configurable {
     private final String key;
 
     /**
-     *  Initialization
+     *  Initialization.
      *
      *  @param href
+     *             identifier of the referenced object
+     *
      *  @param scope
+     *             scope of the object which contains reference
+     *
      *  @param decorated
+     *             decorated object
+     *
+     *  @param key
+     *             identifier of the referenced object inside the parent object
      *
      *  @throws CommonException
      *             if eiter of the arguments is null or blank
@@ -76,29 +84,38 @@ public class ReferenceDecorator<T> extends Configurable {
     }
 
     /**
+     * Returns decorated object.
      *
-     * @return
+     * @return decorated object
      */
     public T getDecorated() {
         return decorated;
     }
 
     /**
+     * Returns identifier of the referenced object.
      *
-     * @return
+     * @return identifier of the referenced object
      */
     public String getHref() {
         return href;
     }
 
     /**
+     * Scope of the object with reference.
      *
-     * @return
+     * @return scope of the object with reference
      */
     public Scope getScope() {
         return scope;
     }
 
+    /**
+     * Returns key, which is identifier of the referenced object inside the
+     * parent (decorated) object.
+     *
+     * @return key
+     */
     public String getKey() {
       return key;
     }

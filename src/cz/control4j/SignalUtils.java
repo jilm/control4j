@@ -81,8 +81,10 @@ public class SignalUtils
    * Fill-in invalid signals instead of null values.
    *
    * @param array
+   *            an array to fill
    *
    * @param length
+   *            how many elements to fill
    */
   public static void fillInvalid(Signal[] array, int length) {
     for (int i = 0; i < length; i++) {

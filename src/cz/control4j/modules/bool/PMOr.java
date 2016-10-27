@@ -46,12 +46,6 @@ public class PMOr extends ProcessModule
    *
    *  @param input an array of size at least one. It shall not
    *             contain null value.
-   *
-   *  @return an array of size one. It contains Signal whose value
-   *             is logical OR on input signals. Returned signal is
-   *             valid as long as it is possible to infer output.
-   *             Timestamp corresponds to the system time in the
-   *             moment of module invocation.
    */
   @Override
   public void process(

@@ -35,23 +35,12 @@ public class OMAD4 extends OMPapouch {
 
   private int status;
 
-  /**
-   * Creates a request for new measurement.
-   * @return
-   */
   @Override
   protected SpinelMessage getRequest() {
     return new SpinelMessage(
             address, cz.lidinsky.papouch.AD4.MEASUREMENT, new int[]{0});
   }
 
-  /**
-   * Returns measured value. The value is from range 0.0 - 1.0
-   *
-   * @param output
-   *
-   * @param outputLength
-   */
   @Override
   protected void get(Signal[] output, int outputLength) {
     SpinelMessage responseMessage = getResponse();

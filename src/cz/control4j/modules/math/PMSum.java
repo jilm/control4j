@@ -24,12 +24,6 @@ import cz.control4j.Signal;
 import cz.control4j.SignalUtils;
 import java.util.Arrays;
 
-/**
- *  Provides sum of the values on the input.
- */
-@Output(alias="out", index=0)
-public class PMSum extends ProcessModule {
-
   /**
    *  Returns a sum of the input signal values.
    *
@@ -43,13 +37,10 @@ public class PMSum extends ProcessModule {
    *  <p>Timestamp of the output signal is set to the current system
    *  time.
    *
-   *  @param input
-   *             an array of size at least one. It may not contain
-   *             <code>null</code> value
-   *
-   *  @return an array of size one. It contains the sum of the input
-   *             signals values.
    */
+@Output(alias="out", index=0)
+public class PMSum extends ProcessModule {
+
   @Override
   public void process(
       Signal[] input, int inputLength, Signal[] output, int outputLength) {

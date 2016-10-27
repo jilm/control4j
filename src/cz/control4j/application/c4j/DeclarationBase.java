@@ -35,7 +35,7 @@ import cz.lidinsky.tools.text.DeclarationReference;
  *  <p>The DeclarationReference object is used as a builder and holder of such
  *  reference information.
  *
- *  @see control4j.tools.DeclarationReference
+ *  @see cz.lidinsky.tools.text.DeclarationReference
  *
  */
 public abstract class DeclarationBase

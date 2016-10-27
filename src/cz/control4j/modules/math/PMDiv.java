@@ -24,14 +24,6 @@ import cz.control4j.ProcessModule;
 import cz.control4j.Signal;
 import cz.control4j.SignalUtils;
 
-/**
- *  Provides mathematical operation division.
- */
-@Input(alias="divident", index=0)
-@Input(alias="divisor", index=1)
-@Output(alias="out", index=0)
-public class PMDiv extends ProcessModule {
-
   /**
    *  Provides mathematical operation division. It expects two inputs, first
    *  one is used as a dividend and the second one as a divisor.  It provides
@@ -42,13 +34,12 @@ public class PMDiv extends ProcessModule {
    *
    *  <p>Timestamp of the output signal is set to the system time.
    *
-   *  @param input
-   *             must be an array of size at least two. First two elements
-   *             may not be null. Extra elements are ignored.
-   *
-   *  @return the input array where the first element contains the result
-   *             of the division. Another elements should be ignored.
    */
+@Input(alias="divident", index=0)
+@Input(alias="divisor", index=1)
+@Output(alias="out", index=0)
+public class PMDiv extends ProcessModule {
+
   @Override
   public void process(
       Signal[] input, int inputLength, Signal[] output, int outputLength) {

@@ -30,11 +30,6 @@ import java.util.Map;
  *  Each configuration item consists of a key and value. The
  *  key must be unique acros the configurable object.
  *
- *  <p>This object contains two kinds of configuration items.
- *  Configuration that was given in the form of key and value,
- *  and the one that was given in the form of reference to
- *  some define object.
- *
  */
 public abstract class Configurable extends DeclarationBase {
 
@@ -121,18 +116,6 @@ public abstract class Configurable extends DeclarationBase {
   public Property getProperty(String key) {
     return configuration.get(key);
   }
-
-  /**
-   *  Returns resolved configuration.
-   * @return
-   */
-  //public IConfigBuffer getConfiguration() {
-    //ConfigBuffer buffer = new ConfigBuffer();
-    //configuration.entrySet().stream().forEach((entry) -> {
-    //    buffer.put(entry.getKey(), entry.getValue().getValue());
-    //    });
-    //return buffer;
-  //}
 
   public void putConfiguration(Configurable source) {
     if (source != null) {

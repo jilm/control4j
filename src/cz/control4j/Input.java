@@ -39,19 +39,22 @@ public @interface Input
 {
   /**
    * It is the index into the input array of the processing method.
-   * @return
+   *
+   * @return input index
    */
   int index() default -1;
 
   /**
    * Identifier of the input.
-   * @return
+   *
+   * @return input identifier
    */
   String alias() default "";
 
   /**
    * Short description if the input.
-   * @return
+   *
+   * @return input description
    */
   String description() default "";
 

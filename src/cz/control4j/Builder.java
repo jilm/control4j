@@ -30,17 +30,15 @@ import java.util.stream.Collectors;
 
 /**
  * Builds the application for execution. It takes a list of all of the modules
- * and connections and creates a list of mocule crates together with the io
+ * and connections and creates a list of module crates together with the io
  * maps.
+ *
+ * <p>Pass input data through the constructor and than call method get to
+ * provides processing and return results.
+ *
+ * <p>Modules order is not changed.
  */
 public class Builder {
-
-  public Builder(
-      Collection<Module> modules, Collection<Connection> connections)
-  {
-    this.modules = modules;
-    this.connections = connections;
-  }
 
   /**
    * The list of all of the modules.
@@ -54,8 +52,32 @@ public class Builder {
 
   private List<IOElement> inputIndex;
   private List<IOElement> outputIndex;
+
+  /** Data structure to store results. */
   private List<ModuleCrate> crates;
 
+
+  /**
+   * Initialization.
+   *
+   * @param modules
+   *            application modules
+   *
+   * @param connections
+   *            connections between modules
+   */
+  public Builder(
+      Collection<Module> modules, Collection<Connection> connections)
+  {
+    this.modules = modules;
+    this.connections = connections;
+  }
+
+  /**
+   * Provides processing and returns result.
+   *
+   * @return list of modules wrapped into the module crates
+   */
   public List<ModuleCrate> get() {
     if (crates == null) {
       process();
@@ -106,8 +128,9 @@ public class Builder {
    * Creates io map based on the IOElement list for just one module.
    *
    * @param index
+   *            TODO:
    *
-   * @return
+   * @return an io map
    */
   private int[] createMap(List<IOElement> index) {
 
@@ -179,7 +202,7 @@ public class Builder {
     return record;
   }
 
-  private class IOElement {
+  private static class IOElement {
 
     /**
      * The module that this io belongs to

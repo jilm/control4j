@@ -39,11 +39,6 @@ public class OMQuidoBinary extends OMPapouch {
 
   private int status;
 
-  /**
-   * Creates a request for new measurement.
-   *
-   * @return
-   */
   @Override
   protected SpinelMessage getRequest() {
     return new SpinelMessage(

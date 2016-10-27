@@ -32,10 +32,6 @@ public class OMQuidoTemperature extends OMPapouch {
 
   private int status;
 
-  /**
-   * Creates a request for new measurement.
-   * @return
-   */
   @Override
   protected SpinelMessage getRequest() {
     return new SpinelMessage(

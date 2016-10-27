@@ -29,7 +29,7 @@ import cz.lidinsky.tools.text.DeclarationReference;
  *  about a place whre the object come from or where was declared.
  *  This is useful for reporting potential problems.
  *
- *  @see control4j.tools.DeclarationReference
+ *  @see cz.lidinsky.tools.text.DeclarationReference
  *
  */
 public abstract class DeclarationBase extends ObjectBase

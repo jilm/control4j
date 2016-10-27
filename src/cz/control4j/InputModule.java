@@ -67,12 +67,6 @@ public abstract class InputModule extends Module
    *
    * @return an index of the input with given index
    *
-   * @throws CommonException
-   *            if the given key is not supported by the module
-   *
-   * @throws CommonException
-   *            if the module doesn't support inputs at all
-   *
    * @see ModuleUtils#getInputIndex(java.lang.Class, java.lang.String)
    */
   public int getInputIndex(String key) {
@@ -80,17 +74,35 @@ public abstract class InputModule extends Module
   }
 
   /**
+   * It must return the index for each given IO that is supported by the
+   * module. The default implementation calls the
+   * {@link #getInputIndex(java.lang.String)} method. Override this method
+   * if another behaviour is needed or if you need to collect information
+   * about input signals. This method is called dureing the application
+   * building.
    *
    * @param input
-   * @return
+   *            information about signal which will be connected into this
+   *            module
+   *
+   * @return index, a number greater or equal to zero. It is the position
+   *            in the input array where the signal value will be placed
+   *            during the control run.
+   *
+   * @see #getInputIndex(java.lang.String)
    */
   public int getInputIndex(IO input) {
     return getInputIndex(input.getKey());
   }
 
   /**
+   * It must return how many input signals is supported by this module. The
+   * default implemntation relay on the annotations to find this information
+   * out. If another behaviour is needed, override this method.
    *
-   * @return
+   * @return total number of input signal that is supported by the module
+   *
+   * @see ModuleUtils#getInputSize(java.lang.Class)
    */
   public int getInputSize() {
     return ModuleUtils.getInputSize(this.getClass());
