@@ -29,12 +29,15 @@ public class FileReader {
 
   DataInputStream dis;
 
+  private File file;
+
   public void read(File file) throws IOException {
     FileInputStream fis = new FileInputStream(file);
     //GZIPInputStream gzis = new GZIPInputStream(fis);
     dis = new DataInputStream(fis);
     readHead(dis);
     System.out.println(dis.available());
+    this.file = file;
   }
 
   private int signals;
@@ -57,6 +60,10 @@ public class FileReader {
 
   public long getSamplePeriod() {
     return samplePeriod;
+  }
+
+  public File getFile() {
+    return file;
   }
 
   public void read(float[] buffer, int length) throws IOException {

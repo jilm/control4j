@@ -16,12 +16,13 @@
  */
 package cz.control4j.modules;
 
-import cz.control4j.ICycleEventListener;
 import cz.control4j.InputModule;
 import cz.control4j.RuntimeException;
 import cz.control4j.Signal;
 import cz.control4j.application.IO;
 import cz.control4j.resources.historian.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Save input signals into the file. The structure of the file is as follows:
@@ -40,23 +41,34 @@ import cz.control4j.resources.historian.FileWriter;
  *   </li>
  * </ol>
  *
+ * <p>It uses {@link cz.control4j.resources.historian.FileWriter} class
+ * to store data into the file.
+ *
  */
-public class IMHistorian extends InputModule implements ICycleEventListener {
+public class IMHistorian extends InputModule {
 
+  /** Back-end storage object. */
   private FileWriter writer;
 
+  /** Identifiers inside the history file. */
+  private List<String> labels;
+
   @Override
-  public void prepare() {
-    writer = new FileWriter(labels, 1000);
-    writer.start(System.currentTimeMillis());
-    Runtime.getRuntime().addShutdownHook(new Thread(writer::close));
+  public void initialize() {
+    labels = new ArrayList<>();
   }
 
   @Override
-  public void beforeIOInitialization(
-      final int declaredInput, final int declaredOutput)
-  {
-    labels = new String[declaredInput];
+  public void prepare() {
+    writer = new FileWriter((String[])labels.toArray(), 1000);
+    writer.start(System.currentTimeMillis());
+    //Runtime.getRuntime().addShutdownHook(new Thread(writer::close));
+  }
+
+  @Override
+  public int getInputIndex(IO input) {
+    labels.add(input.getKey());
+    return labels.size() - 1;
   }
 
   @Override
@@ -68,28 +80,6 @@ public class IMHistorian extends InputModule implements ICycleEventListener {
           : (float)input[i].getValue();
     }
     writer.write(values);
-  }
-
-  @Override
-  public void scanStart() {
-  }
-
-  private int inputCounter = 0;
-  private String[] labels;
-
-  @Override
-  public int getInputIndex(IO input) {
-    labels[inputCounter] = input.getKey();
-    inputCounter++;
-    return inputCounter;
-  }
-
-  @Override
-  public void processingStart() {
-  }
-
-  @Override
-  public void scanEnd() {
   }
 
 }

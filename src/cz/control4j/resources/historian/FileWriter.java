@@ -67,7 +67,7 @@ public class FileWriter {
   /** How many elements in the buffer contain valid data. */
   private int length;
 
-  private long samplePeriod;
+  private final long samplePeriod;
 
   /** Timestamp of the latest sample. */
   private long timestamp;
@@ -102,8 +102,8 @@ public class FileWriter {
       this.timestamp = timestamp;
       writerThread = new Thread(this::fetch);
       writerThread.start();
+      Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
-
   }
 
   /**
@@ -188,19 +188,14 @@ public class FileWriter {
    */
   public void fetch() {
 
-    System.out.println("Going to create the file");
     running = true;
     File workingFile = createFile(getFilename());
-    System.out.println(workingFile.getName());
-        FileOutputStream fos = null;
-        //GZIPOutputStream gzos = null;
-        DataOutputStream os = null;
+    FileOutputStream fos;
+    DataOutputStream os = null;
 
     try {
         fos = new FileOutputStream(workingFile);
-        //gzos = new GZIPOutputStream(fos);
         os = new DataOutputStream(fos);
-
 
       writeHead(os);
 
@@ -228,7 +223,6 @@ public class FileWriter {
         }
 
         // write the content
-        System.out.print(".");
         for (int i = 0; i < archLength; i++) {
           os.writeFloat(buffer[(archOffset + i) % BUFFER_SIZE]);
         }
@@ -242,7 +236,6 @@ public class FileWriter {
       running = false;
       try {
       os.flush();
-      //gzos.finish();
       os.close();
       } catch (IOException e) {}
 
