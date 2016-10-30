@@ -42,7 +42,8 @@ public class LS implements Iterable<FileReader> {
 
   /** Initialize internal variables. */
   public LS() {
-    archiveDir = new File(FileWriter.STORE_PATH);
+    String STORE_PATH = System.getProperty("HISTORIAN_PATH", "C:\\Users\\jilm\\Documents\\hist");
+    archiveDir = new File(STORE_PATH);
     fileList = archiveDir.listFiles();
   }
 

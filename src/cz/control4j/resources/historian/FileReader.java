@@ -72,6 +72,39 @@ public class FileReader {
     }
   }
 
+  /**
+   * Read historical data into the given buffer.
+   *
+   * @param buffer
+   *            a buffer to store historical data
+   *
+   * @param offset
+   *            how many samples should be skipped before the first one is
+   *            stored into the buffer. The first sample is alvays stored
+   *            at index zero
+   *
+   * @param length
+   *            how many samples should be stored into the buffer
+   *
+   * @param signalIndex
+   *            the index of the signal that should be stored into the buffer
+   *
+   * @return how many samples were really stored into the buffer
+   *
+   * @throws java.io.IOException
+   *            if something went wrong
+   */
+  public int read(float[] buffer, int offset, int length, int signalIndex)
+      throws IOException {
+    for (int j = 0; j < offset * signals; j++) dis.readFloat();
+    for (int j = 0; j < signalIndex; j++) dis.readFloat();
+    for (int i = 0; i < length; i++) {
+      buffer[i] = dis.readFloat();
+      for (int j = 0; j < signals-1; j++) dis.readFloat();
+    }
+    return length; // TODO:
+  }
+
   public void read(double[] buffer, int length) throws IOException {
     for (int i = 0; i < length; i++) {
       buffer[i] = dis.readFloat();
