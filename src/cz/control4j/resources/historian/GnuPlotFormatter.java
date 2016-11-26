@@ -32,13 +32,26 @@ public class GnuPlotFormatter {
     File dir = new File(FileWriter.STORE_PATH);
     File file = new File(dir, args[0]);
     FileReader reader = new FileReader();
+
     try {
       reader.read(file);
-      System.out.println("plot '-' with lines");
-      float buffer[] = new float[reader.getLabels().length];
-      while (true) {
-        reader.read(buffer, buffer.length);
-        System.out.println(buffer[5]);
+      int signals = reader.getLabels().length;
+      float buffer[] = new float[(int)reader.getLength()*signals];
+      System.out.println("set grid");
+      System.out.print(
+          String.format("plot '-' with lines title '%s'", reader.getLabels()[0]));
+      for (int i = 1; i < signals; i++) {
+        System.out.print(
+            String.format(", '-' with lines title '%s'", reader.getLabels()[i]));
+      }
+      System.out.println();
+      reader.read(buffer, buffer.length);
+      for (int i = 0; i < signals; i++) {
+        for (int j = 0; j < buffer.length / signals; j++) {
+          System.out.println(buffer[j * signals + i]);
+        }
+        System.out.println("e");
+        System.out.println();
       }
     } catch (IOException ex) {
       Logger.getLogger(CUT.class.getName()).log(Level.SEVERE, null, ex);

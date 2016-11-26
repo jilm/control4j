@@ -19,35 +19,50 @@ package cz.control4j.resources.historian;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author jilm
  */
-public class CUT {
+public class RExporter {
 
   public static void main(String[] args) {
 
-    System.out.println(FileWriter.STORE_PATH);
     File dir = new File(FileWriter.STORE_PATH);
     File file = new File(dir, args[0]);
     FileReader reader = new FileReader();
+
     try {
       reader.read(file);
-      float buffer[] = new float[reader.getLabels().length];
+      long timestamp = reader.getTimestamp();
+      DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_DATE;
+      int signals = reader.getLabels().length;
+      double buffer[] = new double[signals];
+      System.out.printf("timestamp ");
+      System.out.println(
+          String.join(" ", reader.getLabels()));
       while (true) {
         reader.read(buffer, buffer.length);
-        System.out.println(Arrays.toString(buffer));
+        System.out.print(timestamp);
+        System.out.print(" ");
+//        System.out.print(DateTimeFrmatter.ISO_TIME.format(LocalDateTime.ofEpochSecond(timestamp/1000, 0, ZoneOffset.UTC)));
+//        System.out.print(" ");
+        System.out.println(
+            Arrays.stream(buffer)
+                .mapToObj(Double::toString)
+                .collect(Collectors.joining(" ")));
+        timestamp += reader.getSamplePeriod();
       }
     } catch (EOFException ex) {
-      // just end
+      // just end of file
     } catch (IOException ex) {
       Logger.getLogger(CUT.class.getName()).log(Level.SEVERE, null, ex);
     }
-
   }
 
 }

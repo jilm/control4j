@@ -24,6 +24,9 @@ import cz.lidinsky.spinel.SpinelMessage;
 import cz.lidinsky.spinel.Transaction;
 import cz.lidinsky.tools.reflect.Setter;
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  */
@@ -50,7 +53,9 @@ abstract class IMPapouch extends InputModule implements ICycleEventListener {
   @Override
   public void scanEnd() {
     if (request != null) {
+      System.out.println(request.toString());
       transaction = channel.putRequest(request);
+      request = null;
     }
   }
 
@@ -58,7 +63,15 @@ abstract class IMPapouch extends InputModule implements ICycleEventListener {
    * Sends request for new data.
    */
   @Override
-  public void scanStart() { }
+  public void scanStart() {
+    if (transaction != null && transaction.hasResponse()) {
+      try {
+        System.out.println(transaction.get(100).toString());
+      } catch (TimeoutException ex) {
+        Logger.getLogger(IMPapouch.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+  }
 
   protected SpinelMessage responseMessage;
 

@@ -60,7 +60,9 @@ public class IMHistorian extends InputModule {
 
   @Override
   public void prepare() {
-    writer = new FileWriter((String[])labels.toArray(), 1000);
+    String[] labelArray = new String[labels.size()];
+    labelArray = (String[]) labels.toArray(labelArray);
+    writer = new FileWriter(labelArray, 1000);
     writer.start(System.currentTimeMillis());
     //Runtime.getRuntime().addShutdownHook(new Thread(writer::close));
   }

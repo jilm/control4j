@@ -36,7 +36,6 @@ public class FileReader {
     //GZIPInputStream gzis = new GZIPInputStream(fis);
     dis = new DataInputStream(fis);
     readHead(dis);
-    System.out.println(dis.available());
     this.file = file;
   }
 
@@ -103,6 +102,21 @@ public class FileReader {
       for (int j = 0; j < signals-1; j++) dis.readFloat();
     }
     return length; // TODO:
+  }
+
+  public int read(float[] buffer, int offset, int length, int[] signalIndices) throws IOException {
+    dis.skip(offset * Float.BYTES * signals);
+    float[] sample = new float[signals];
+    int counter = 0;
+    for (int i = 0; i < length / signalIndices.length; i++) {
+      for (int j = 0; j < signals; j++) {
+        sample[j] = dis.readFloat();
+      }
+      for (int k = 0; k < signalIndices.length; k++) {
+        buffer[counter++] = sample[signalIndices[k]];
+      }
+    }
+    return counter;
   }
 
   public void read(double[] buffer, int length) throws IOException {

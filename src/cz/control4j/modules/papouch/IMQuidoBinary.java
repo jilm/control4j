@@ -30,7 +30,7 @@ import cz.lidinsky.spinel.SpinelMessage;
 @Input(alias = "in4", index = 3)
 @Input(alias = "in5", index = 4)
 @Input(alias = "in6", index = 5)
-@Input(alias = "in7", index = 7)
+@Input(alias = "in7", index = 6)
 @Input(alias = "in8", index = 7)
 public class IMQuidoBinary extends IMPapouch {
 
@@ -41,10 +41,11 @@ public class IMQuidoBinary extends IMPapouch {
     int counter = 0;
     for (int i = 0; i < inputLength; i++) {
       if (input[i] != null && input[i].isValid()) {
-        data[counter++] = input[i].getBoolean() ? 0x80 + i : i;
+        data[counter++] = input[i].getBoolean() ? 0x80 | (i+1) : (i+1);
       }
     }
     request = new SpinelMessage(address, Quido.SET_OUTPUT, data, 0, counter);
+    System.out.println(request.toString());
   }
 
 }

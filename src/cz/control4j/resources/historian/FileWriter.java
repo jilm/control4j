@@ -81,7 +81,7 @@ public class FileWriter {
   private Thread writerThread;
 
   static {
-    STORE_PATH = System.getProperty("HISTORIAN_PATH", "/tmp/");
+    STORE_PATH = System.getProperty("HISTORIAN_PATH", "C:\\Users\\jilm\\Documents\\hist");
   }
 
   private String PATH;
@@ -94,6 +94,7 @@ public class FileWriter {
     this.stop = false;
     this.running = false;
     this.samplePeriod = samplePeriod;
+    System.out.println("Historian directory: " + STORE_PATH);
   }
 
   public synchronized void start(long timestamp) {
@@ -135,6 +136,7 @@ public class FileWriter {
    * Close opened file.
    */
   public synchronized void close() {
+    System.out.println("Going to close historian file...");
     stop = true;
     notifyAll();
     try {
@@ -198,6 +200,7 @@ public class FileWriter {
         os = new DataOutputStream(fos);
 
       writeHead(os);
+      System.out.println("File created: " + workingFile.getName());
 
       while (!stop) {
         // wait for some data in the buffer
@@ -227,17 +230,20 @@ public class FileWriter {
           os.writeFloat(buffer[(archOffset + i) % BUFFER_SIZE]);
         }
         os.flush();
+        System.out.println("Data written into the history file ...");
 
       }
+
 
     } catch (IOException ex) {
       Logger.getLogger(FileWriter.class.getName()).log(Level.SEVERE, null, ex);
     } finally {
+      System.out.println("Going to close the history file...");
       running = false;
       try {
-      os.flush();
+      //os.flush();
       os.close();
-      } catch (IOException e) {}
+      } catch (Exception e) {}
 
     }
 
