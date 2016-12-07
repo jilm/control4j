@@ -46,12 +46,22 @@ public interface ICycleEventListener
   public void processingStart();
 
   /**
-   *  Method that is invoked immediately after the last module has
-   *  finished and before wait for a new cycle begins. This may be
-   *  used by modules and resources that communicate with some
-   *  output hardware to send output data. This is the last event
-   *  of the scan.
+   * Method that is invoked immediately after the last module has
+   * finished and before wait for a new cycle begins. This may be
+   * used by modules and resources that communicate with some
+   * output hardware to send output data. This is the last event
+   * of the scan.
+   *
+   * <p>This method is invoked even if the scan has been interrupted
+   * by some exception and therefore not all of the modules were executed.
    */
   public void scanEnd();
+
+  /**
+   * This method is called after the scan has been interrupted by the
+   * exception. Implementing this method, the developer has the chanse
+   * to recover from such a situation.
+   */
+  public default void brokenScan() {}
 
 }

@@ -22,8 +22,8 @@ import cz.control4j.application.Scope;
 
 /**
  *
- *  Represents a property of some higher level object.
- *  This object has two variants.
+ *  Represents a property of some higher level object. Each property is
+ *  uniquely identified by the key. This object has two variants.
  *  <ol>
  *    <li>Property which directly contains a value.
  *    <li>Property which refers to some define object.
@@ -35,12 +35,26 @@ public class Property extends DeclarationBase implements IReference {
     /** An empty constructor. */
     public Property() { }
 
+    /** Unique identifier of the property. */
     private String key;
 
+    /**
+     * Returns a unique identifier of this property.
+     *
+     * @return identifier of the property
+     */
     public String getKey() {
         return key;
     }
 
+    /**
+     * Sets the identifier of this property.
+     *
+     * @param key
+     *            property identifier
+     *
+     * @return this property
+     */
     Property setKey(String key) {
         this.key = key;
         return this;
@@ -89,8 +103,10 @@ public class Property extends DeclarationBase implements IReference {
     }
 
     /**
+     * Sets the reference to some definition object.
      *
      * @param href
+     *            reference to some definition object
      */
     @Override
     public void setHref(String href) {
@@ -100,11 +116,13 @@ public class Property extends DeclarationBase implements IReference {
         }
     }
 
+    /** Scope under which this property is defined. */
     private Scope scope;
 
     /**
+     * Returns scope under which this object is defined.
      *
-     * @return
+     * @return scope of this property
      */
     @Override
     public Scope getScope() {
@@ -112,8 +130,10 @@ public class Property extends DeclarationBase implements IReference {
     }
 
     /**
+     * Sets the scope of this property object.
      *
      * @param scope
+     *            scope of this property object
      */
     @Override
     public void setScope(Scope scope) {
@@ -122,6 +142,13 @@ public class Property extends DeclarationBase implements IReference {
 
     private boolean isReference;
 
+    /**
+     * Returns false if this object contains the value directly, true if
+     * this object contains reference to some definition object instead.
+     *
+     * @return false if the value was given directly, true if the reference
+     *            was given istead
+     */
     public boolean isReference() {
         return isReference;
     }

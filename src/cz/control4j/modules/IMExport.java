@@ -34,6 +34,8 @@ import org.json.JSONObject;
  */
 public class IMExport extends InputModule {
 
+  private boolean running = false;
+
   public IMExport() {
     ids = new ArrayList<>();
   }
@@ -57,6 +59,7 @@ public class IMExport extends InputModule {
     try {
       client = new Client("localhost", 12349);
       client.start();
+      running = true;
     } catch (IOException ex) {
       Logger.getLogger(IMExport.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -64,10 +67,12 @@ public class IMExport extends InputModule {
 
   @Override
   protected void put(Signal[] input, int inputLength) throws RuntimeException {
-    try {
-      client.send(toJSON(input, inputLength));
-    } catch (IOException ex) {
-      Logger.getLogger(IMExport.class.getName()).log(Level.SEVERE, null, ex);
+    if (running) {
+      try {
+        client.send(toJSON(input, inputLength));
+      } catch (IOException ex) {
+        Logger.getLogger(IMExport.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
   }
 

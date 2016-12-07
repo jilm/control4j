@@ -19,9 +19,12 @@ package cz.control4j;
 import cz.control4j.application.Connection;
 import cz.control4j.application.Preprocessor;
 import cz.control4j.application.ScopeHandler;
+import cz.control4j.resources.Console;
+import cz.lidinsky.logview.LogFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.logging.SocketHandler;
 
 /**
  * An entry point of the control4j application. This object is a singleton.
@@ -31,6 +34,8 @@ public class Control {
   private static Control instance;
 
   private ControlLoop engine;
+
+  private Console console;
 
   private Control() { }
 
@@ -67,6 +72,9 @@ public class Control {
 
   private void loadApplication(String filename) throws Exception {
     // load application
+    SocketHandler sh = new SocketHandler("localhost", 12347);
+    sh.setFormatter(new LogFormatter());
+    applicationLogger.addHandler(sh);
     applicationLogger.info(
         String.format("Going to load an application from the file: %s", filename));
     cz.control4j.application.c4j.C4j2Control translator
@@ -105,7 +113,17 @@ public class Control {
     applicationLogger.info("Going to run the application...");
     int dataBufferSize = preprocessor.getConnections().size();
     engine = new ControlLoop();
+    console = new Console();
+    engine.addCycleEventListener(console);
     engine.run(builder.get(), dataBufferSize);
+  }
+
+  public static long getScanNumber() {
+    return instance.engine.getScanNumber();
+  }
+
+  public static void print(String label, Signal signal) {
+    instance.console.print(label, signal);
   }
 
 }

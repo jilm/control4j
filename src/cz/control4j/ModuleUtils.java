@@ -12,7 +12,9 @@ import java.util.ResourceBundle;
 
 /**
  * Utilities that helps to work with module objects mainly through the
- * reflection api.
+ * reflection api. These methods provide default implementaion of module
+ * configuration and module IO configuration. Annotations are extensively
+ * used.
  */
 public class ModuleUtils {
 

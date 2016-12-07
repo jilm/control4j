@@ -18,10 +18,15 @@
 
 package cz.control4j;
 
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Retention;
 import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Module classes which supports variable number of input signals and which
+ * are labeled by this annotation doesn't have to implement getInputIndex
+ * method.
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface VariableInput

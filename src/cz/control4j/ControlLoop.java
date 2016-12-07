@@ -77,11 +77,14 @@ class ControlLoop {
   /** True, if the dump file should be created, false otherwise. */
   protected boolean dump = true;
 
+  private long scanCounter;
+
   /**
    *  It does nothing.
    */
   ControlLoop() {
     modules = new ArrayList<>();
+    scanCounter = 0;
   }
 
   /**
@@ -247,19 +250,7 @@ class ControlLoop {
 
     // The control loop !
     while (!exit) {
-
-      try {
-        scan();
-      } catch (Exception e) {
-        // if an exception arise during the processing some of the module, the
-        // cycle is not completed and problem is logged.
-        Control.getLogger().warning(new CommonException()
-            .setCause(e)
-            .set("message", "The scan was not finished because of exception!")
-            .set("module", executedModule)
-            .toString());
-        //dump(e, executedModule.getModule()); // TODO:
-      }
+      scan();
     }
   }
 
@@ -269,7 +260,7 @@ class ControlLoop {
    * @throws cz.control4j.RuntimeException
    *            if some of the modules throws the exception
    */
-  protected void scan() throws RuntimeException {
+  protected void scan() {
     scanStartTime = System.currentTimeMillis();
     // erase data buffer
     dataBuffer.clear();
@@ -279,8 +270,20 @@ class ControlLoop {
     fireProcessingStartEvent();
     // module execution
     Control.getLogger().fine("Start of module processing");
-    for (ModuleCrate crate : modules) {
-      crate.execute(dataBuffer);
+    try {
+      for (ModuleCrate crate : modules) {
+        crate.execute(dataBuffer);
+      }
+    } catch (RuntimeException e) {
+        // if an exception arise during the processing some of the module, the
+        // cycle is not completed and problem is logged.
+        Control.getLogger().warning(new CommonException()
+            .setCause(e)
+            .set("message", "The scan was not finished because of exception!")
+            //.set("module", executedModule)
+            .toString());
+        //dump(e, executedModule.getModule()); // TODO:
+      fireBrokenScanEvent();
     }
     fireCycleEndEvent();
     // wait for next turn
@@ -298,6 +301,7 @@ class ControlLoop {
             Long.toString(scanDuration));
     }
     lastScanDuration = scanDuration;
+    scanCounter++;
   }
 
   /**
@@ -340,6 +344,16 @@ class ControlLoop {
     cycleListeners.stream().forEach((listener) -> {
       listener.processingStart();
     });
+  }
+
+  private void fireBrokenScanEvent() {
+    for (ICycleEventListener listener : cycleListeners) {
+      try {
+        listener.brokenScan();
+      } catch (Exception e) {
+        // TODO: log exception
+      }
+    }
   }
 
   /**
@@ -413,5 +427,10 @@ class ControlLoop {
       Tools.close(writer);
     }
   }
+
+  public long getScanNumber() {
+    return scanCounter;
+  }
+
 
 }

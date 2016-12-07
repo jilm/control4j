@@ -18,6 +18,7 @@
 
 package cz.control4j.modules.text;
 
+import cz.control4j.Control;
 import cz.control4j.Input;
 import cz.control4j.InputModule;
 import cz.control4j.Signal;
@@ -166,8 +167,9 @@ public class IMNarrowFormatter extends InputModule {
   protected void put(Signal[] input, int inputLength) {
     if (input[0] == null || (input[0].isValid() && input[0].getBoolean())) {
       for (int i=1; i<inputLength; i++) {
-        System.out.println(input[i].toString(
-            signalFormat, delimiter, labels.get(i - 1)));
+        Control.print(labels.get(i-1), input[i]);
+//        System.out.println(input[i].toString(
+//            signalFormat, delimiter, labels.get(i - 1)));
       }
     }
   }
