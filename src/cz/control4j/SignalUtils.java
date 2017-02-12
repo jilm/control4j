@@ -18,8 +18,13 @@
 
 package cz.control4j;
 
+import cz.lidinsky.signalserver.MessageUtils;
+import cz.lidinsky.spinel.SpinelMessage;
+import static cz.lidinsky.tools.Validate.notNull;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Date;
+import org.json.JSONObject;
 
 /**
  *
@@ -122,6 +127,94 @@ public class SignalUtils
   public static boolean allValid(Signal[] signals, int length) {
     return Arrays.stream(signals, 0, length)
       .allMatch(signal -> signal != null && signal.isValid());
+  }
+
+  /**
+   * Returns JSON representation of the given signal.
+   *
+   * @param signal
+   *
+   * @return
+   */
+  public static JSONObject toJSON(Signal signal) {
+    if (!notNull(signal).isValid()) {
+      return new JSONObject()
+          .put("class", "cz.control4j.Signal")
+          .put("validity", false);
+    } else {
+      return new JSONObject()
+          .put("class", "cz.control4j.Signal")
+          .put("validity", true)
+          .put("value", signal.getValue());
+    }
+  }
+
+  /**
+   * Encode given signal into form of spinel message. The data of the spinel
+   * message is as follows:
+   *
+   * 16bytes - first eigth characters of the given identifier
+   * 4bytes - timestamp
+   * 1byte  - validity
+   * 8bytes - value
+   *
+   * @param id
+   *            identifier of the signal. Only first eight characters of the
+   *            identifier is used.
+   *
+   * @param signal
+   *            signal to encode
+   *
+   * @return spinel message that contains given signal and identifier
+   */
+  public static ByteBuffer toSpinelData(String id, Signal signal) {
+    ByteBuffer buffer = ByteBuffer.allocate(29);
+    for (int i = 0; i < 8; i++) {
+      buffer.putChar(id.length() <= i ? ' ' : id.charAt(i));
+    }
+    buffer.putLong(signal.getTimestamp().toInstant().toEpochMilli());
+    buffer.put((byte) (signal.isValid() ? 0 : 1));
+    buffer.putDouble(signal.isValid() ? signal.getValue() : Double.NaN);
+    return buffer;
+  }
+
+
+
+  public static final int SPINEL_BUFFER_SIZE = Long.BYTES + Double.BYTES
+      + MessageUtils.SPINEL_IDENTIFIER_SIZE * Character.BYTES + Byte.BYTES;
+
+  public static SpinelMessage toSpinel(final int address,
+      final int instruction, final String id, final Signal signal) {
+
+    // data for the message
+    ByteBuffer buffer = ByteBuffer.allocate(SPINEL_BUFFER_SIZE);
+    for (int i = 0; i < MessageUtils.SPINEL_IDENTIFIER_SIZE; i++) {
+      buffer.putChar(id.length() <= i ? ' ' : id.charAt(i));
+    }
+    buffer.putLong(signal.getTimestamp().toInstant().toEpochMilli());
+    buffer.put((byte) (signal.isValid() ? 0 : 1));
+    buffer.putDouble(signal.isValid() ? signal.getValue() : Double.NaN);
+    // the whole message
+    return new SpinelMessage(address, instruction, buffer);
+  }
+
+
+  public static Signal fromSpinel(SpinelMessage message) {
+
+    ByteBuffer buffer = message.getData();
+    buffer.rewind();
+    // skip the id
+    for (int i = 0; i < MessageUtils.SPINEL_IDENTIFIER_SIZE; i++) {
+      buffer.getChar();
+    }
+    long timestamp = buffer.getLong();
+    boolean valid = buffer.get() == 0;
+    double value = buffer.getDouble();
+    if (valid) {
+      return Signal.getSignal(value, new Date(timestamp));
+    } else {
+      return Signal.getSignal(new Date(timestamp));
+    }
   }
 
 }
